@@ -1,3 +1,4 @@
+var login = require('./login.json');
 var discord = require('discord.js');
 var dex = require('./dex.js');
 
@@ -19,5 +20,4 @@ bot.on('message', function(message) {
 	}
 });
 
-// Replace token with your bot token
-bot.login('token');
+bot.login(login.token);
