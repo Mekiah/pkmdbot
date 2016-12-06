@@ -9,14 +9,17 @@ bot.on('ready', function() {
   console.log('Logged in as ' + bot.user.username + '#' + bot.user.discriminator);
 });
 
+bot.on('disconnect', function() {
+  console.log("Logging off...");
+  process.exit();
+});
+
 bot.on('message', function(message) {
   if(message.author !== bot.user && message.content.startsWith(settings.prefix) && message.content.length > 1) {
     var params = message.content.substring(1).split(" ", 3);
     // Owner kill switch
     if(params[0] === "die") {
-      console.log("Logging off...");
       bot.destroy();
-      process.exit();
     }
 
     if(params[0] === "dex") {
