@@ -1,5 +1,6 @@
 var discord = require('discord.js');
 var login = require('./login.json');
+var settings = require('./settings.json');
 var dex = require('./modules/dex.js');
 
 var bot = new discord.Client();
@@ -9,17 +10,30 @@ bot.on('ready', function() {
 });
 
 bot.on('message', function(message) {
-	// Temporary command to kill bot process quickly from chat
-	if(message.content == "die"){
-    console.log("Logging off...");
-		bot.destroy();
-    process.exit();
-	}
+  if(message.author !== bot.user && message.content.startsWith(settings.prefix) && message.content.length > 1) {
+    var params = message.content.substring(1).split(" ", 3);
+    // Owner kill switch
+    if(params[0] === "die") {
+      console.log("Logging off...");
+      bot.destroy();
+      process.exit();
+    }
 
-	// Main message check. Check for bot message and prefix/command
-	if(message.author != bot.user){
-		dex.pkm_name.run(message);
-	}
+    if(params[0] === "dex") {
+      switch (params.length) {
+        case 1:
+          dex.meta(message);
+          break;
+        case 2:
+          dex.info(message, params[1]);
+          break;
+        case 3:
+          break;
+        default:
+          break;
+      }
+    }
+  }
 });
 
 bot.login(login.token);
