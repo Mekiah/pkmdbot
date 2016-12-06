@@ -1,6 +1,6 @@
 var login = require('./login.json');
 var discord = require('discord.js');
-var dex = require('./dex.js');
+var dex = require('./modules/dex.js');
 
 var bot = new discord.Client();
 
