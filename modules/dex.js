@@ -26,10 +26,6 @@ var commands = {
 				var title = $("h1").text();
 				message.reply(title);
 			});
-	},
-
-	type: {
-
 	}
 }
 
