@@ -12,8 +12,7 @@ Object.keys(settings.modules).forEach(function(key) {
 var bot = new discord.Client();
 
 bot.on("ready", function() {
-  console.log("Modules loaded:");
-  console.log(Object.keys(modules));
+  console.log("Modules loaded: " + Object.keys(modules));
   console.log("Logged in as " + bot.user.username + "#" + bot.user.discriminator);
 });
 
@@ -32,6 +31,7 @@ bot.on("message", function(message) {
       return;
     }
 
+    // Sends input to the correct module
     if(params[0] in modules) {
       switch (params.length) {
         case 1:
@@ -49,6 +49,7 @@ bot.on("message", function(message) {
           }
           break;
         default:
+          console.log("Default for switch statement was somehow reached.");
           break;
       }
     }

@@ -6,10 +6,10 @@ var pkm_dex = request.defaults({baseUrl: "https://pokemondb.net/pokedex/"});
 var commands = {
 	// Returns what !dex does, usage, and list of commands e.g. type, moves, effectiveness
 	meta: function(message) {
-		message.reply(Object.keys(commands));
+		message.reply("Returns information on a specific pokemon\nUsage: `!dex <pokemon> <command>`\nCommands (default is \"info\"): " + Object.keys(commands));
 	},
 
-	// Returns basic information on a pokemon
+	// Default command, returns basic information on a pokemon
 	info: function(message, name) {
 		pkm_dex(name, function(error, response, body) {
 				if(error) {
