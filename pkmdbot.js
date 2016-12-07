@@ -6,7 +6,7 @@ var settings = require("./settings.json");
 var modules = {}
 Object.keys(settings.modules).forEach(function(key) {
   if(settings.modules[key] === "TRUE") {
-    modules[key] = require("./modules/" + key + ".js")
+    modules[key] = require("./modules/" + key + ".js");
   }
 });
 var bot = new discord.Client();

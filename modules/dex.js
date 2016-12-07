@@ -1,7 +1,7 @@
 var request = require('request');
 var cheerio = require('cheerio');
 
-var pkm_dex = request.defaults({baseUrl: "https://pokemondb.net/pokedex/"})
+var pkm_dex = request.defaults({baseUrl: "https://pokemondb.net/pokedex/"});
 
 var commands = {
 	// Returns what !dex does, usage, and list of commands e.g. type, moves, effectiveness
