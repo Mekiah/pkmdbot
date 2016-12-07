@@ -29,6 +29,7 @@ bot.on("message", function(message) {
     // Owner kill switch
     if(params[0] === "die") {
       bot.destroy();
+      return;
     }
 
     if(params[0] in modules) {
