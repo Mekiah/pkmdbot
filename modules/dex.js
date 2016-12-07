@@ -1,5 +1,5 @@
-var request = require('request');
-var cheerio = require('cheerio');
+var request = require("request");
+var cheerio = require("cheerio");
 
 var pkm_dex = request.defaults({baseUrl: "https://pokemondb.net/pokedex/"});
 
@@ -13,12 +13,12 @@ var commands = {
 	info: function(message, name) {
 		pkm_dex(name, function(error, response, body) {
 				if(error) {
-					console.log('Error: ' + error);
-					message.reply('An error has occured!');
+					console.log("Error: " + error);
+					message.reply("An error has occured!");
 					return;
 				}
-				if(response.statusCode == '404') {
-					message.reply(name + ' does not exist!');
+				if(response.statusCode == "404") {
+					message.reply(name + " does not exist!");
 					return;
 				}
 
