@@ -2,6 +2,6 @@
   "prefix": "!",
   "owner": "Mekiah#1942",
   "modules": {
-    "dex": "TRUE"
+    "dex": true
   }
 }
