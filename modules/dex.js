@@ -11,7 +11,10 @@ var commands = {
 	},
 
 	// Default command, returns basic information on a pokemon
-	info: function(message, name) {
+	info: function(message, name, version) {
+		if(!version) {
+			version = settings.version;
+		}
 		pkm_dex(name, function(error, response, body) {
 				if(error) {
 					console.log("Error: " + error);
@@ -25,7 +28,7 @@ var commands = {
 
 				var $ = cheerio.load(body);
 				var title = $("h1").text();
-				message.reply(title);
+				message.reply(title + version);
 			});
 	}
 }

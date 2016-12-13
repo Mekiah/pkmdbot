@@ -1,6 +1,7 @@
 {
   "prefix": "!",
   "owner": "Mekiah#1942",
+  "version": "Sun",
   "modules": {
     "dex": true
   }
