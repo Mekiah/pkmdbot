@@ -1,13 +1,13 @@
-var request = require("request");
-var cheerio = require("cheerio");
+var promise = require("pokedex-promise-v2");
 var settings = require("../settings.json");
 
-var pkm_dex = request.defaults({baseUrl: "https://pokemondb.net/pokedex/"});
+var pkm = new promise();
 
 var commands = {
 	// Returns what !dex does, usage, and list of commands e.g. type, moves, effectiveness
 	meta: function(message) {
-		message.reply("Returns information on a specific pokemon\nUsage: `" + settings.prefix + "dex <pokemon> <command> <version>`\nCommands (default is \"info\"): " + Object.keys(commands));
+		message.channel.sendMessage("Returns information on a specific pokemon\nUsage: " + settings.prefix +
+		"dex <pokemon> <command> <version>\nCommands (default is \"info\"): " + Object.keys(commands).join(", "));
 	},
 
 	// Default command, returns basic information on a pokemon
@@ -15,22 +15,33 @@ var commands = {
 		if(!version) {
 			version = settings.version;
 		}
-		pkm_dex(name, function(error, response, body) {
-				if(error) {
-					console.log("Error: " + error);
-					message.reply("An error has occured!");
-					return;
+		var reply = "";
+
+		pkm.getPokemonByName(name, function(r, e) {
+			if(e) {
+				message.channel.sendMessage(name + " is not a pokemon.");
+			}
+			else {
+				reply = r.name + " " + r.id + " " + r.weight;
+				types = slotSort(r.types);
+				abilities = slotSort(r.abilities);
+				for(i in types) {
+					reply = reply + " " + types[i].type.name;
 				}
-				if(response.statusCode == "404") {
-					message.reply(name + " does not exist!");
-					return;
+				for(i in abilities) {
+					reply = reply + " " + abilities[i].ability.name;
 				}
 
-				var $ = cheerio.load(body);
-				var title = $("h1").text();
-				message.reply(title + version);
-			});
+				message.channel.sendMessage(reply);
+			}
+		});
 	}
+}
+
+function slotSort(list) {
+	return list.sort(function(a, b) {
+		return a.slot - b.slot;
+	});
 }
 
 module.exports = commands;

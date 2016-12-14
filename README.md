@@ -1,8 +1,6 @@
 # pokemiah
-A Discord bot using discord.js as an api and pokemondb.net for information
+A Node.js Discord bot for Pokemon info
 
 ### Requires:
-* node.js
 * discord.js
-* request
-* cheerio
+* pokedex-promise-v2
