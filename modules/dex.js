@@ -5,45 +5,51 @@ var pkm = new promise();
 
 var commands = {
 	// Returns what !dex does, usage, and list of commands e.g. type, moves, effectiveness
-	meta: function(message) {
-		message.channel.sendMessage("Returns information on a specific pokemon\nUsage: " + settings.prefix +
-		"dex <pokemon> <command> <version>\nCommands (default is \"info\"): " + Object.keys(commands).join(", "));
+	help: function(message) {
+		message.channel.sendMessage("Returns information on a pokemon\nUsage: "
+		 + settings.prefix + "dex <command> <subcommand> <name|dex#>\n"
+		 + pluralCheck("Command", "", "s", commands) + " (default is \"info\"): " + Object.keys(commands).join(", "));
 	},
 
 	// Default command, returns basic information on a pokemon
-	info: function(message, name, version) {
-		if(!version) {
-			version = settings.version;
+	info: {
+		help: function(message) {
+			message.channel.sendMessage("Returns basic details of a pokemon\nUsage: "
+			 + settings.prefix + "dex info <subcommand> <name|dex#>\n"
+			 + pluralCheck("Subcommand", "", "s", commands.info) + " (default is \"run\"): " + Object.keys(commands.info).join(", "));
+		},
+		run: function(message, name) {
+			var reply = "";
+
+			pkm.getPokemonByName(name.toLowerCase(), function(r, e) {
+				if(e) {
+					message.channel.sendMessage(name + " is not a pokemon.");
+				}
+				else {
+					reply = firstUpper(r.name) + " #" + r.id + "\nWeight: " + r.weight/10 + " kg";
+
+					types = slotSort(r.types);
+					typeList = [];
+					for(i in types) {
+						typeList.push(firstUpper(types[i].type.name));
+					}
+					reply = reply + "\n" + pluralCheck("Type", "", "s", typeList) + ": " + typeList.join(" | ");
+
+					abilities = slotSort(r.abilities);
+					abilityList = [];
+					for(i in abilities) {
+						abilityList.push(firstUpper(abilities[i].ability.name));
+					}
+					reply = reply + "\n" + pluralCheck("Abilit", "y", "ies", abilityList) + ": " + abilityList.join(", ");
+
+					message.channel.sendMessage(reply);
+				}
+			});
 		}
-		var reply = "";
-
-		pkm.getPokemonByName(name.toLowerCase(), function(r, e) {
-			if(e) {
-				message.channel.sendMessage(name + " is not a pokemon.");
-			}
-			else {
-				reply = firstUpper(r.name) + " #" + r.id + "\nWeight: " + r.weight/10 + "kg\nTypes: ";
-
-				types = slotSort(r.types);
-				typeList = [];
-				for(i in types) {
-					typeList.push(firstUpper(types[i].type.name));
-				}
-				reply = reply + typeList.join(" | ") + "\nAbilities: ";
-
-				abilities = slotSort(r.abilities);
-				abilityList = [];
-				for(i in abilities) {
-					abilityList.push(firstUpper(abilities[i].ability.name));
-				}
-				reply = reply + abilityList.join(", ");
-
-				message.channel.sendMessage(reply);
-			}
-		});
 	}
 }
 
+// Sorts list of api objects by slot value
 function slotSort(list) {
 	return list.sort(function(a, b) {
 		return a.slot - b.slot;
@@ -56,7 +62,16 @@ function firstUpper(string) {
 		upped[i] = upped[i][0].toUpperCase() + upped[i].substring(1);
 	}
 	return upped.join(" ");
-	// return string[0].toUpperCase() + string.substring(1);
+}
+
+// Returns string concating o with s if list has 1 item or p is list has >1 items
+function pluralCheck(o, s, p, list) {
+  if(Object.keys(list).length > 1) {
+    return o + p;
+  }
+  else {
+    return o + s;
+  }
 }
 
 module.exports = commands;
