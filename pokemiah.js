@@ -47,7 +47,7 @@ bot.on("message", function(message) {
             modules[params[0]][params[2]](message, params[1], params[3]);
           }
           else {
-            message.reply(params[2] + " is not a command in " + params[0] + ".");
+            message.channel.sendMessage(params[2] + " is not a command in " + params[0] + ".");
           }
           break;
         default:
@@ -56,7 +56,7 @@ bot.on("message", function(message) {
       }
     }
     else {
-      message.reply(params[0] + " is not a module.");
+      message.channel.sendMessage(params[0] + " is not a module.");
     }
 
   }

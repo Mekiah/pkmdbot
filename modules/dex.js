@@ -17,20 +17,26 @@ var commands = {
 		}
 		var reply = "";
 
-		pkm.getPokemonByName(name, function(r, e) {
+		pkm.getPokemonByName(name.toLowerCase(), function(r, e) {
 			if(e) {
 				message.channel.sendMessage(name + " is not a pokemon.");
 			}
 			else {
-				reply = r.name + " " + r.id + " " + r.weight;
+				reply = firstUpper(r.name) + " #" + r.id + "\nWeight: " + r.weight/10 + "kg\nTypes: ";
+
 				types = slotSort(r.types);
-				abilities = slotSort(r.abilities);
+				typeList = [];
 				for(i in types) {
-					reply = reply + " " + types[i].type.name;
+					typeList.push(firstUpper(types[i].type.name));
 				}
+				reply = reply + typeList.join(" | ") + "\nAbilities: ";
+
+				abilities = slotSort(r.abilities);
+				abilityList = [];
 				for(i in abilities) {
-					reply = reply + " " + abilities[i].ability.name;
+					abilityList.push(firstUpper(abilities[i].ability.name));
 				}
+				reply = reply + abilityList.join(", ");
 
 				message.channel.sendMessage(reply);
 			}
@@ -42,6 +48,15 @@ function slotSort(list) {
 	return list.sort(function(a, b) {
 		return a.slot - b.slot;
 	});
+}
+
+function firstUpper(string) {
+	upped = string.split("-");
+	for(i in upped) {
+		upped[i] = upped[i][0].toUpperCase() + upped[i].substring(1);
+	}
+	return upped.join(" ");
+	// return string[0].toUpperCase() + string.substring(1);
 }
 
 module.exports = commands;
