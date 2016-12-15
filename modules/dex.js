@@ -10,7 +10,9 @@ var commands = {
 		 + settings.prefix + "dex <command> <subcommand> <name|dex#>\n"
 		 + pluralCheck("Command", "", "s", commands) + " (default is \"info\"): " + Object.keys(commands).join(", "));
 	},
-
+	run: function(message) {
+		commands.info.run(message);
+	},
 	// Default command, returns basic information on a pokemon
 	info: {
 		help: function(message) {

@@ -38,57 +38,40 @@ bot.on("message", function(message) {
       message.channel.sendMessage("To use this bot, type \"" + settings.prefix +"\" followed by a module name.\n"
        + pluralCheck("Module", "", "s", modules) + ": " + Object.keys(modules).join(", ") + ".");
     }
+
     // Module found
     else if(params[0] in modules) {
       // Module help
       if(params[1] === "help" || params[1] === "" || params[1] === undefined) {
         modules[params[0]].help(message);
       }
+
       // Command found
       else if(params[1] in modules[params[0]]) {
+
         // Command help
         if(params[2] === "help" || params[2] === "" || params[2] === undefined) {
           modules[params[0]][params[1]].help(message);
         }
+
         // Subcommand found and executed
         else if(params[2] in modules[params[0]][params[1]]) {
-          modules[params[0]][params[1]][params[2]](message, toApiCase(params.slice(3).join("-")));
+          modules[params[0]][params[1]].run(message, toApiCase(params.slice(3).join("-")), params[2]);
         }
+
         // Subcommand not found, push rest of input into api call
         else {
           modules[params[0]][params[1]].run(message, toApiCase(params.slice(2).join("-")));
         }
       }
+
       // Command not found, push rest of input into api call
       else {
-        modules[params[0]].info.run(message, toApiCase(params.slice(1).join("-")));
+        modules[params[0]].run(message, toApiCase(params.slice(1).join("-")));
       }
 
-
-/*
-      switch (params.length) {
-        case 1:
-          modules[params[0]].meta(message);
-          break;
-        case 2:
-          modules[params[0]].info(message, params[1]);
-          break;
-        case 3:
-        case 4:
-          if(params[2] in modules[params[0]]) {
-            modules[params[0]][params[2]](message, params[1], params[3]);
-          }
-          else {
-            message.channel.sendMessage(params[2] + " is not a command in " + params[0] +
-            ".\nType \"" + settings.prefix + params[0] + "\" for usage.");
-          }
-          break;
-        default:
-          console.log("Default for switch statement was somehow reached");
-          break;
-      }
-*/
     }
+
     // No matching module found
     else {
       message.channel.sendMessage(params[0] + " is not a module.\n"
