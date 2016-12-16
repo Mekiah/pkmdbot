@@ -1,6 +1,7 @@
 var discord = require("discord.js");
 var login = require("./login.json");
 var settings = require("./settings.json");
+var convert = require("./convert.json")
 
 // Imports all modules flagged as true in settings.json into modules object
 var modules = {help: {}}
@@ -95,7 +96,12 @@ bot.on("message", function(message) {
 });
 
 function toApiCase(string) {
-  return string.replace(/[^\-0-9A-Za-z]/g,"").toLowerCase();
+  var api = string.replace(/[^\-0-9A-Za-z]/g,"").toLowerCase();
+  if(api in convert)
+  {
+    api = convert[api];
+  }
+  return api;
 }
 
 function pluralCheck(o, s, p, list) {
