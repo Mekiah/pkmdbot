@@ -4,7 +4,7 @@ var settings = require("./settings.json");
 var convert = require("./convert.json")
 
 // Imports all modules flagged as true in settings.json into modules object
-var modules = {help: {}}
+var modules = { help: {} }
 Object.keys(settings.modules).forEach(function(key) {
   if(settings.modules[key]) {
     modules[key] = require("./modules/" + key + ".js");

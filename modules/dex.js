@@ -30,9 +30,18 @@ var commands = {
 
 		run: function(message, name) {
 			var reply = "";
+			var details = {
+				sprite: "",
+				name: "",
+				number: "",
+				height: "",
+				weight: "",
+				type: "",
+				ability: ""
+			}
 
-			pkm.getPokemonByName(name.toLowerCase(), function(r, e) {
-				if(e) {
+			pkm.getPokemonByName(name, function(r, e) {
+				if(e || parseInt(name) > settings.count) {
 					if('statusCode' in e && 'error' in e && 'detail' in e.error) {
 						message.channel.sendMessage(e.statusCode + " - " + e.error.detail);
 					}
