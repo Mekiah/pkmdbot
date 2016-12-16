@@ -3,10 +3,15 @@ var login = require("./login.json");
 var settings = require("./settings.json");
 
 // Imports all modules flagged as true in settings.json into modules object
-var modules = {}
+var modules = {help: {}}
 Object.keys(settings.modules).forEach(function(key) {
   if(settings.modules[key]) {
     modules[key] = require("./modules/" + key + ".js");
+  }
+});
+Object.keys(settings.help).forEach(function(key) {
+  if(settings.help[key]) {
+    modules.help[key] = null;
   }
 });
 var bot = new discord.Client();
@@ -34,48 +39,56 @@ bot.on("message", function(message) {
 
     // Sends input to the correct module
     // Bot help
-    if(params[0] === "help" || params[0] === "") {
-      message.channel.sendMessage("To use this bot, type \"" + settings.prefix +"\" followed by a module name.\n"
-       + pluralCheck("Module", "", "s", modules) + ": " + Object.keys(modules).join(", ") + ".");
+    if(params[0] in modules.help) {
+      message.channel.sendMessage("Welcome to Pokemiah\nNote: Commands and subs are completely optional\n"
+       + "Usage: " + settings.prefix + "<module> <command> <sub> <name>\n"
+       + pluralCheck("Module", "", "s", modules) + ": " + Object.keys(modules).join(", "));
     }
 
     // Module found
     else if(params[0] in modules) {
       // Module help
-      if(params[1] === "help" || params[1] === "" || params[1] === undefined) {
+      if(params[1] in modules.help) {
         modules[params[0]].help(message);
       }
 
       // Command found
-      else if(params[1] in modules[params[0]]) {
+      else if(params[1] in modules[params[0]] && params[1] !== "run") {
 
         // Command help
-        if(params[2] === "help" || params[2] === "" || params[2] === undefined) {
+        if(params[2] in modules.help) {
           modules[params[0]][params[1]].help(message);
         }
 
-        // Subcommand found and executed
-        else if(params[2] in modules[params[0]][params[1]]) {
+        // Sub found and passed into function
+        else if("sub" in modules[params[0]][params[1]] && params[2] in modules[params[0]][params[1]].sub) {
           modules[params[0]][params[1]].run(message, toApiCase(params.slice(3).join("-")), params[2]);
         }
 
-        // Subcommand not found, push rest of input into api call
+        // Sub not found, push rest of input into default sub api call
         else {
           modules[params[0]][params[1]].run(message, toApiCase(params.slice(2).join("-")));
         }
       }
 
-      // Command not found, push rest of input into api call
+      // Command not found, push rest of input into default command api call
       else {
         modules[params[0]].run(message, toApiCase(params.slice(1).join("-")));
       }
 
     }
 
-    // No matching module found
+    // Module not found, push rest of input into default module api call
     else {
-      message.channel.sendMessage(params[0] + " is not a module.\n"
-       + pluralCheck("Module", "", "s", modules) + ": " + Object.keys(modules).join(", ") + ".");
+
+      if(settings['default-module'] in modules) {
+        modules[settings['default-module']].run(message, toApiCase(params.slice(0).join("-")));
+      }
+
+      else {
+        message.channel.sendMessage("No default module specified");
+      }
+
     }
   }
 });

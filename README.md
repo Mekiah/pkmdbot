@@ -1,5 +1,5 @@
 # pokemiah
-A Node.js Discord bot for Pokemon info
+A Node.js Discord bot for retrieving information from https://pokeapi.co
 
 ### Requires:
 * discord.js

@@ -2,7 +2,13 @@
   "prefix": "!",
   "owner": "Mekiah#1942",
   "version": "omega-ruby",
+  "help": {
+    "help": true,
+    "": true,
+    "undefined": true
+  },
   "modules": {
     "dex": true
-  }
+  },
+  "default-module": "dex"
 }
