@@ -37,12 +37,12 @@ bot.on("message", function(message) {
       return;
     }
 
-    // Sends input to the correct module
+    /* Sends input to the correct module */
     // Bot help
     if(params[0] in modules.help) {
       message.channel.sendMessage("Welcome to Pokemiah\nNote: Commands and subs are completely optional\n"
        + "Usage: " + settings.prefix + "<module> <command> <sub> <name>\n"
-       + pluralCheck("Module", "", "s", modules) + ": " + Object.keys(modules).join(", "));
+       + pluralCheck("Module", "", "s", modules) + "(default is \"" + settings['default-module'] + "\"): " + Object.keys(modules).join(", "));
     }
 
     // Module found
@@ -90,6 +90,7 @@ bot.on("message", function(message) {
       }
 
     }
+    /**/
   }
 });
 
