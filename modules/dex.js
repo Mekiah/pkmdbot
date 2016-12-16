@@ -1,7 +1,11 @@
 var promise = require("pokedex-promise-v2");
 var settings = require("../settings.json");
 
-var pkm = new promise();
+var options = {
+  cacheLimit: 60 * 1000,
+  tiemout: 5 * 1000
+}
+var pkm = new promise(options);
 
 var commands = {
 	// Returns what !dex does, usage, and list of commands e.g. type, moves, effectiveness
@@ -29,8 +33,12 @@ var commands = {
 
 			pkm.getPokemonByName(name.toLowerCase(), function(r, e) {
 				if(e) {
-					console.log(e);
-					message.channel.sendMessage(name + " was not found");
+					if('statusCode' in e && 'error' in e && 'detail' in e.error) {
+						message.channel.sendMessage(e.statusCode + " - " + e.error.detail);
+					}
+					else {
+						console.log(e.name + " - " + e.message);
+					}
 				}
 				else {
 					reply = firstUpper(r.name) + " #" + r.id + "\nWeight: " + r.weight/10 + " kg";
