@@ -1,7 +1,7 @@
 var discord = require("discord.js");
 var login = require("./login.json");
 var settings = require("./settings.json");
-var convert = require("./convert.json")
+var forms = require("./forms.json")
 
 // Imports all modules flagged as true in settings.json into modules object
 var modules = { help: {} }
@@ -97,9 +97,9 @@ bot.on("message", function(message) {
 
 function toApiCase(string) {
   var api = string.replace(/[^\-0-9A-Za-z]/g,"").toLowerCase();
-  if(api in convert)
+  if(api in convert.alternate)
   {
-    api = convert[api];
+    api = convert.alternate[api];
   }
   return api;
 }

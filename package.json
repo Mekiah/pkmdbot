@@ -23,6 +23,7 @@
   "homepage": "https://github.com/Mekiah/pkmdbot#readme",
   "dependencies": {
     "discord.js": "^10.0.1",
-    "pokedex-promise-v2": "^3.0.1"
+    "pokedex-promise-v2": "^3.0.1",
+    "promise": "^7.1.1"
   }
 }
