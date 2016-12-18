@@ -1,8 +1,12 @@
 var Promise = require("promise");
 var Pokedex = require("pokedex-promise-v2");
 var settings = require("../settings.json");
+var convert = require("../convert.json");
 
 var options = {
+  protocol: 'http',
+  hostName: 'localhost:8000',
+  versionPath: '/api/v2/',
   cacheLimit: 60 * 1000,
   tiemout: 5 * 1000
 }
@@ -30,8 +34,6 @@ var commands = {
 		},
 
 		run: function(message, name) {
-			console.log("Function start.");
-
 			// Skips api check if dex # out of range
 			if(parseInt(name) > settings.count) {
 				message.channel.sendMessage("404 - Not found.");
@@ -39,394 +41,111 @@ var commands = {
 			}
 
 			var reply = "";
+      var error;
 			var details = {
-				sprite: "",
+        speciesname: "",
+        pokemonname: "",
+        formname: name,
+				sprite: null,
 				name: "",
 				number: "",
+        title: "",
 				height: "",
 				weight: "",
 				types: "",
-				abilities: ""
+				abilities: "",
+        flavor: ""
 			}
 			var promises = [];
 
-/* With nested promises
-			pkm.getPokemonByName(name)
-				.then(function(r) {
-					console.log("then1 start");
+      if(details.formname in convert.form2name) {
+        details.pokemonname = convert.form2name[details.formname];
+      }
+      else {
+        details.pokemonname = details.formname;
+      }
+      if(details.formname in convert.form2species) {
+        details.speciesname = convert.form2species[details.formname];
+      }
+      else {
+        details.speciesname = details.formname;
+      }
 
-					reply = r.name + " #" + r.id + "\nWeight: " + r.weight/10 + " kg";
-					details.number = r.id;
-					details.weight = r.weight/10;
-					details.height = r.height/10;
-
-					types = slotSort(r.types);
-					typeList = [];
-					for(i in types) {
-						typeList.push(firstUpper(types[i].type.name));
-					}
-					reply = reply + "\n" + pluralCheck("Type", "", "s", typeList) + ": " + typeList.join(" | ");
-					details.type = typeList;
-
-					abilities = slotSort(r.abilities);
-					abilityList = [];
-					for(i in abilities) {
-						abilityList.push(firstUpper(abilities[i].ability.name));
-					}
-					reply = reply + "\n" + pluralCheck("Abilit", "y", "ies", abilityList) + ": " + abilityList.join(", ");
-					details.ability = abilityList;
-
-					message.channel.sendMessage(reply);
-					console.log(details);
-
-					console.log("then1 end");
-					return r.name;
-				})
-				.then(function(name) {
-					console.log("species then arg: " + name);
-					pkm.getPokemonSpeciesByName(name)
-						.then(function(r) {
-							console.log("then2 start");
-							for(i in r.names) {
-								if(r.names[i].language.name === "en") {
-									details.name = r.names[i].name;
-									return name;
-								}
-							}
-							console.log("then2 end");
-						})
-						.catch(function(e) {
-							console.log("catch2 start");
-							console.log("pokemon is a form");
-							console.log("catch2 end");
-							return name;
-						});
-				})
-				.then(function(name) {
-					pkm.getPokemonFormByName(name)
-						.then(function(r) {
-							console.log("then3 start");
-							for(i in r.names) {
-								if(r.names[i].language.name === "en") {
-									details.name = r.names[i].name;
-									break;
-								}
-							}
-							console.log("then3 end");
-						})
-						.catch(function(e) {
-							console.log("catch3 start");
-							console.log(name + " form resource not found");
-							console.log("catch3 end");
-						});
-				})
-				.catch(function(e) {
-					console.log("catch1 start");
-
-					if('statusCode' in e && 'error' in e && 'detail' in e.error) {
-						message.channel.sendMessage(e.statusCode + " - " + e.error.detail);
-					}
-					else {
-						message.channel.sendMessage(e.name + " - " + e.message);
-						console.log(e.name + " - " + e.message);
-					}
-
-					console.log("catch1 end");
-				});
-*/
-
-/* side by side callbacks
-			pkm.getPokemonSpeciesByName(name, function(r, e) {
-				console.log("Species call start.");
-				if(e) {
-					doformcall = true;
-				}
-				else {
-					for(i in r.names) {
-						if(r.names[i].language.name === "en") {
-							details.name = r.names[i].name;
-							break;
-						}
-					}
-				}
-				console.log("Species call end.");
-			});
-
-			pkm.getPokemonFormByName(name, function(r, e) {
-				console.log("Form call start.");
-				if(e) {
-					console.log(name + " form resource not found");
-				}
-				else {
-					for(i in r.names) {
-						if(r.names[i].language.name === "en") {
-							details.name = r.names[i].name;
-							break;
-						}
-					}
-				}
-				console.log("Form call end.");
-			});
-
-			pkm.getPokemonByName(name, function(r, e) {
-				console.log("Name call start.");
-				if(e) {
-					if('statusCode' in e && 'error' in e && 'detail' in e.error) {
-						message.channel.sendMessage(e.statusCode + " - " + e.error.detail);
-					}
-					else {
-						message.channel.sendMessage(e.name + " - " + e.message);
-						console.log(e.name + " - " + e.message);
-					}
-				}
-				else {
-
-
-					reply = r.name + " #" + r.id + "\nWeight: " + r.weight/10 + " kg";
-
-					types = slotSort(r.types);
-					typeList = [];
-					for(i in types) {
-						typeList.push(firstUpper(types[i].type.name));
-					}
-					reply = reply + "\n" + pluralCheck("Type", "", "s", typeList) + ": " + typeList.join(" | ");
-
-					abilities = slotSort(r.abilities);
-					abilityList = [];
-					for(i in abilities) {
-						abilityList.push(firstUpper(abilities[i].ability.name));
-					}
-					reply = reply + "\n" + pluralCheck("Abilit", "y", "ies", abilityList) + ": " + abilityList.join(", ");
-
-					message.channel.sendMessage(reply);
-				}
-				console.log("Name call end.");
-			});
-*/
-
-/* side by side calls backs + pushing
-
-			promises.push(pkm.getPokemonSpeciesByName(name, function(r, e) {
-				console.log("Species call start.");
-				if(e) {
-					doformcall = true;
-				}
-				else {
-					for(i in r.names) {
-						if(r.names[i].language.name === "en") {
-							details.name = r.names[i].name;
-							break;
-						}
-					}
-				}
-				console.log("Species call end.");
-			}))
-
-			promises.push(pkm.getPokemonFormByName(name, function(r, e) {
-				console.log("Form call start.");
-				if(e) {
-					console.log(name + " form resource not found");
-				}
-				else {
-					for(i in r.names) {
-						if(r.names[i].language.name === "en") {
-							details.name = r.names[i].name;
-							break;
-						}
-					}
-				}
-				console.log("Form call end.");
-			}))
-
-			promises.push(pkm.getPokemonByName(name, function(r, e) {
-				console.log("Name call start.");
-				if(e) {
-					if('statusCode' in e && 'error' in e && 'detail' in e.error) {
-						message.channel.sendMessage(e.statusCode + " - " + e.error.detail);
-					}
-					else {
-						message.channel.sendMessage(e.name + " - " + e.message);
-						console.log(e.name + " - " + e.message);
-					}
-				}
-				else {
-					details.height = r.height;
-					details.weight = r.weight;
-					reply = r.name + " #" + r.id + "\nWeight: " + r.weight/10 + " kg";
-
-					types = slotSort(r.types);
-					typeList = [];
-					for(i in types) {
-						typeList.push(firstUpper(types[i].type.name));
-					}
-					details.types = typeList;
-					reply = reply + "\n" + pluralCheck("Type", "", "s", typeList) + ": " + typeList.join(" | ");
-
-					abilities = slotSort(r.abilities);
-					abilityList = [];
-					for(i in abilities) {
-						abilityList.push(firstUpper(abilities[i].ability.name));
-					}
-					details.ability = abilityList;
-					reply = reply + "\n" + pluralCheck("Abilit", "y", "ies", abilityList) + ": " + abilityList.join(", ");
-
-					message.channel.sendMessage(reply);
-				}
-				console.log("Name call end.");
-			}))
-*/
-
-/* side by side promises
-
-
-			pkm.getPokemonFormByName(name)
-		    .then(function(r) {
-					console.log("Namethen call start.");
-					reply = r.name + " #" + r.id + "\nWeight: " + r.weight/10 + " kg";
-
-					types = slotSort(r.types);
-					typeList = [];
-					for(i in types) {
-						typeList.push(firstUpper(types[i].type.name));
-					}
-					reply = reply + "\n" + pluralCheck("Type", "", "s", typeList) + ": " + typeList.join(" | ");
-
-					abilities = slotSort(r.abilities);
-					abilityList = [];
-					for(i in abilities) {
-						abilityList.push(firstUpper(abilities[i].ability.name));
-					}
-					reply = reply + "\n" + pluralCheck("Abilit", "y", "ies", abilityList) + ": " + abilityList.join(", ");
-
-					message.channel.sendMessage(reply);
-					console.log("Namethen call start.");
-		    })
-		    .catch(function(e) {
-					console.log("Namecatch call start.");
-					if('statusCode' in e && 'error' in e && 'detail' in e.error) {
-						message.channel.sendMessage(e.statusCode + " - " + e.error.detail);
-					}
-					else {
-						message.channel.sendMessage(e.name + " - " + e.message);
-						console.log(e.name + " - " + e.message);
-					}
-					console.log("Namecatch call end.");
-		    });
-
-
-				pkm.getPokemonFormByName(name)
-			    .then(function(r) {
-						console.log("Formthen call start.");
-						for(i in r.names) {
-							if(r.names[i].language.name === "en") {
-								details.name = r.names[i].name;
-								break;
-							}
-						}
-						console.log("Formthen call start.");
-			    })
-			    .catch(function(e) {
-						console.log("Formcatch call start.");
-						console.log(name + " form resource not found");
-						console.log("Formcatch call end.");
-			    });
-
-
-
-
-
-				pkm.getPokemonSpeciesByName(name)
-					.then(function(r) {
-						console.log("Speciesthen call start.");
-						for(i in r.names) {
-							if(r.names[i].language.name === "en") {
-								details.name = r.names[i].name;
-								//break;
-							}
-						}
-						console.log("Speciesthen call start.");
-					})
-					.catch(function(e) {
-						console.log("Speciescatch call start.");
-						console.log("Speciescatch call end.");
-					});
-					*/
-
-
-			promises.push(pkm.getPokemonSpeciesByName(name)
+			promises.push(pkm.getPokemonSpeciesByName(details.speciesname)
 			.then(function(r) {
-				console.log("Species then call start.");
-
 				for(i in r.names) {
 					if(r.names[i].language.name === "en") {
 						details.name = r.names[i].name;
 						break;
 					}
 				}
-
-				console.log("Species then call end.");
+        for(i in r.flavor_text_entries) {
+					if(r.flavor_text_entries[i].language.name === "en" && r.flavor_text_entries[i].version.name === settings.version) {
+						details.flavor = r.flavor_text_entries[i].flavor_text;
+						break;
+					}
+				}
+        for(i in r.pokedex_numbers) {
+					if(r.pokedex_numbers[i].pokedex.name === "national") {
+						details.number = r.pokedex_numbers[i].entry_number;
+						break;
+					}
+				}
 			})
 			.catch(function(e) {
-				console.log("Species catch call start.");
-
 				console.log(name + " species resource not found.");
-
-				console.log("Species catch call end.");
 			}));
 
-			promises.push(pkm.getPokemonFormByName(name)
+			promises.push(pkm.getPokemonFormByName(details.formname)
 			.then(function(r) {
-				console.log("Form then call start.");
-
+        // or form_names
 				for(i in r.names) {
 					if(r.names[i].language.name === "en") {
-						details.name = r.names[i].name;
+						details.title = "\n" + r.names[i].name;
 						break;
 					}
 				}
-
-				console.log("Form then call end.");
+        details.sprite = r.sprites.front_default;
 			})
 			.catch(function(e) {
-				console.log("Form catch call start.");
-
 				console.log(name + " form resource not found.");
-
-				console.log("Form catch call end.");
 			}));
 
-			promises.push(pkm.getPokemonByName(name)
+			promises.push(pkm.getPokemonByName(details.pokemonname)
 			.then(function(r) {
-				console.log("Name then call start.");
-
-				details.height = r.height;
-				details.weight = r.weight;
-				reply = r.name + " #" + r.id + "\nWeight: " + r.weight/10 + " kg";
 
 				types = slotSort(r.types);
 				typeList = [];
 				for(i in types) {
-					typeList.push(firstUpper(types[i].type.name));
+          if(types[i].type.name in convert.type) {
+            typeList.push(convert.type[types[i].type.name]);
+          }
+          else {
+            typeList.push(firstUpper(types[i].type.name));
+          }
 				}
-				details.types = typeList;
-				reply = reply + "\n" + pluralCheck("Type", "", "s", typeList) + ": " + typeList.join(" | ");
 
 				abilities = slotSort(r.abilities);
 				abilityList = [];
 				for(i in abilities) {
-					abilityList.push(firstUpper(abilities[i].ability.name));
+          if(abilities[i].ability.name in convert.ability) {
+            abilityList.push(convert.ability[abilities[i].ability.name]);
+          }
+          else {
+            abilityList.push(firstUpper(abilities[i].ability.name));
+          }
 				}
+
+  			details.height = (r.height / 10) + " m";
+  			details.weight = (r.weight / 10) + " kg";
+  			details.types = typeList;
 				details.abilities = abilityList;
-				reply = reply + "\n" + pluralCheck("Abilit", "y", "ies", abilityList) + ": " + abilityList.join(", ");
 
 				message.channel.sendMessage(reply);
-
-				console.log("Name then call end.");
 			})
 			.catch(function(e) {
-				console.log("Name catch call start.");
-
 				console.log(name + " name resource not found.");
+
 				if('statusCode' in e && 'error' in e && 'detail' in e.error) {
 					message.channel.sendMessage(e.statusCode + " - " + e.error.detail);
 				}
@@ -434,17 +153,16 @@ var commands = {
 					message.channel.sendMessage(e.name + " - " + e.message);
 					console.log(e.name + " - " + e.message);
 				}
-
-				console.log("Name catch call end.");
 			}));
 
 
-
 			Promise.all(promises)
-			.then(function() { console.log(details); })
-			.catch(console.error);
-
-			console.log("Function end.");
+			.then(function() {
+        console.log(details);
+      })
+			.catch(function(e) {
+        console.log("Error in info Promise.all for " + name " :" + e);
+      });
 		}
 	},
 
@@ -478,32 +196,7 @@ function slotSort(list) {
 	});
 }
 
-function getProperName(name) {
-	pkm.getPokemonSpeciesByName(name, function(r2, e2) {
-		if(e2) {
-			pkm.getPokemonFormByName(name, function(r3, e3) {
-				if(e3) {
-					console.log(name + " form resource not found");
-				}
-				else {
-					for(i in r3.names) {
-						if(r3.names[i].language.name === "en") {
-							return r3.names[i].name;
-						}
-					}
-				}
-			});
-		}
-		else {
-			for(i in r2.names) {
-				if(r2.names[i].language.name === "en") {
-					return r2.names[i].name;
-				}
-			}
-		}
-	});
-}
-
+// Returns A String Where All Words Are Capitalized
 function firstUpper(string) {
 	upped = string.split("-");
 	for(i in upped) {
@@ -512,9 +205,14 @@ function firstUpper(string) {
 	return upped.join(" ");
 }
 
+// Gets last piece of a url
+function getLastPart(url) {
+	return url.split("/").filter(function(r) { if(r !== "") {return r;} }).slice(-1)[0];
+}
+
 // Returns string concating o with s if list has 1 item or p is list has >1 items
 function pluralCheck(o, s, p, list) {
-  if(Object.keys(list).filter(function(r) {if(r !== 'run') {return r;}}).length > 1) {
+  if(Object.keys(list).filter(function(r) { if(r !== "run") { return r; } }).length > 1) {
     return o + p;
   }
   else {
