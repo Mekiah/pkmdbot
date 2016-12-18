@@ -34,6 +34,8 @@ var commands = {
 		},
 
 		run: function(message, name) {
+      console.log("Serving \"" + "!dex info " + name + "\" to \""
+      + message.author.username + "#" + message.author.discriminator +"\"");
 			// Skips api check if dex # out of range
 			if(parseInt(name) > settings.count) {
 				message.channel.sendMessage("404 - Not found.");
@@ -106,7 +108,12 @@ var commands = {
 					}
 				}
         // or shiny
-        details.sprite = r.sprites.front_default;
+        if(r.sprites.front_shiny) {
+          details.sprite = r.sprites.front_shiny;
+        }
+        else {
+          details.sprite = r.sprites.front_default;
+        }
 			})
 			.catch(function(e) {
         error = e;
@@ -136,7 +143,7 @@ var commands = {
             abilityList.push(firstUpper(abilities[i].ability.name));
           }
           if(abilities[i].is_hidden) {
-            abilityList[i] = "**" + abilityList[i] + "**";
+            abilityList[i] = "*" + abilityList[i] + "*";
           }
 				}
 

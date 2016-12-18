@@ -33,9 +33,13 @@ bot.on("message", function(message) {
     var params = message.content.substring(1).split(" ");
 
     // Owner kill switch
-    if(params[0] === "die") {
+    if(params[0] === "die" && message.author.username + "#" + message.author.discriminator === settings.owner) {
       bot.destroy();
       return;
+    }
+
+    // About the project
+    if(params[0] === "about") {
     }
 
     /* Sends input to the correct module */
