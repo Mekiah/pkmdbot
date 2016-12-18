@@ -4,8 +4,8 @@ var settings = require("../settings.json");
 var convert = require("../convert.json");
 
 var options = {
-  protocol: 'http',
-  hostName: 'localhost:8000',
+  //protocol: 'http',
+  //hostName: 'localhost:8000',
   versionPath: '/api/v2/',
   cacheLimit: 60 * 1000,
   tiemout: 5 * 1000
@@ -40,7 +40,7 @@ var commands = {
 				return;
 			}
 
-			var reply = "";
+			var reply;
       var error;
 			var details = {
         speciesname: "",
@@ -93,7 +93,7 @@ var commands = {
 				}
 			})
 			.catch(function(e) {
-				console.log(name + " species resource not found.");
+        error = e;
 			}));
 
 			promises.push(pkm.getPokemonFormByName(details.formname)
@@ -101,14 +101,15 @@ var commands = {
         // or form_names
 				for(i in r.names) {
 					if(r.names[i].language.name === "en") {
-						details.title = "\n" + r.names[i].name;
+						details.title = "\n*" + r.names[i].name + "*";
 						break;
 					}
 				}
+        // or shiny
         details.sprite = r.sprites.front_default;
 			})
 			.catch(function(e) {
-				console.log(name + " form resource not found.");
+        error = e;
 			}));
 
 			promises.push(pkm.getPokemonByName(details.pokemonname)
@@ -134,34 +135,52 @@ var commands = {
           else {
             abilityList.push(firstUpper(abilities[i].ability.name));
           }
+          if(abilities[i].is_hidden) {
+            abilityList[i] = "**" + abilityList[i] + "**";
+          }
 				}
 
   			details.height = (r.height / 10) + " m";
   			details.weight = (r.weight / 10) + " kg";
   			details.types = typeList;
 				details.abilities = abilityList;
-
-				message.channel.sendMessage(reply);
 			})
 			.catch(function(e) {
-				console.log(name + " name resource not found.");
-
-				if('statusCode' in e && 'error' in e && 'detail' in e.error) {
-					message.channel.sendMessage(e.statusCode + " - " + e.error.detail);
-				}
-				else {
-					message.channel.sendMessage(e.name + " - " + e.message);
-					console.log(e.name + " - " + e.message);
-				}
+        error = e;
 			}));
-
 
 			Promise.all(promises)
 			.then(function() {
-        console.log(details);
+        if(error) {
+          if('statusCode' in error && 'error' in error && 'detail' in error.error) {
+  					message.channel.sendMessage(error.statusCode + " - " + error.error.detail);
+  				}
+  				else {
+  					message.channel.sendMessage(error.name + " - " + error.message);
+  					console.log(error.name + " - " + error.message);
+  				}
+        }
+        else {
+          if(details.sprite) {
+            var spritepromise = message.channel.sendFile(details.sprite);
+          }
+          Promise.resolve(spritepromise).then(function() {
+
+            reply = details.name + " #" + details.number + details.title
+            + "\nHeight: " + details.height
+            + "\nWeight: " + details.weight
+            + "\n" + pluralCheck("Type", "", "s", typeList) + ": " + typeList.join(" | ")
+            + "\n" + pluralCheck("Abilit", "y", "ies", abilityList) + ": " + abilityList.join(", ")
+            + "\n" + details.flavor;
+            message.channel.sendMessage(reply);
+          })
+          .catch(function(e) {
+            console.log("Error in info Promise.resolve for " + name + ": " + e);
+          });
+        }
       })
 			.catch(function(e) {
-        console.log("Error in info Promise.all for " + name " :" + e);
+        console.log("Error in info Promise.all for " + name + ": " + e);
       });
 		}
 	},
@@ -199,8 +218,8 @@ function slotSort(list) {
 // Returns A String Where All Words Are Capitalized
 function firstUpper(string) {
 	upped = string.split("-");
-	for(i in upped) {
-		upped[i] = upped[i][0].toUpperCase() + upped[i].substring(1);
+	for(u in upped) {
+		upped[u] = upped[u][0].toUpperCase() + upped[u].substring(1);
 	}
 	return upped.join(" ");
 }
