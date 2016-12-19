@@ -1,11 +1,12 @@
+var fs = require("fs");
 var Promise = require("promise");
 var Pokedex = require("pokedex-promise-v2");
 var settings = require("../settings.json");
 var convert = require("../convert.json");
 
 var options = {
-  //protocol: 'http',
-  //hostName: 'localhost:8000',
+  protocol: 'http',
+  hostName: 'localhost:8000',
   versionPath: '/api/v2/',
   cacheLimit: 60 * 1000,
   tiemout: 5 * 1000
@@ -170,6 +171,15 @@ var commands = {
   				}
         }
         else {
+          // Overwrite sprite url with local sprite path if exists
+          if(fs.existsSync("./sprites/" + details.formname + ".gif")) {
+            details.sprite = "./sprites/" + details.formname + ".gif";
+          }
+          else if(fs.existsSync("./sprites/" + details.formname + ".png")) {
+            details.sprite = "./sprites/" + details.formname + ".png";
+          }
+
+          // Build details into a message
           reply = details.name + " #" + details.number + details.title
           + "\nHeight: " + details.height
           + "\nWeight: " + details.weight
@@ -178,8 +188,9 @@ var commands = {
           //+ "\n" + details.flavor
           ;
 
+          // Send file with a comment if sprite exists, else send text only
           if(details.sprite) {
-            message.channel.sendFile(details.sprite, details.formname + ".png", reply);
+            message.channel.sendFile(details.sprite, null, reply);
           }
           else {
             message.channel.sendMessage(reply);
