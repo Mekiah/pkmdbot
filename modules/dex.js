@@ -4,14 +4,7 @@ var Pokedex = require("pokedex-promise-v2");
 var settings = require("../settings.json");
 var convert = require("../convert.json");
 
-var options = {
-  protocol: 'http',
-  hostName: 'localhost:8000',
-  versionPath: '/api/v2/',
-  cacheLimit: 60 * 1000,
-  tiemout: 5 * 1000
-}
-var pkm = new Pokedex(options);
+var pkm = new Pokedex(settings.pokedex);
 
 var commands = {
 	// Returns what !dex does, usage, and list of commands e.g. type, moves, effectiveness

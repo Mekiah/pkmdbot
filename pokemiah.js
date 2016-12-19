@@ -84,15 +84,12 @@ bot.on("message", function(message) {
 
     // Module not found, push rest of input into default module api call
     else {
-
       if(settings['default-module'] in modules) {
         modules[settings['default-module']].run(message, toApiCase(params.slice(0).join("-")));
       }
-
       else {
         message.channel.sendMessage("No default module specified");
       }
-
     }
     /**/
   }
@@ -100,8 +97,9 @@ bot.on("message", function(message) {
 
 bot.login(login.token);
 
-// Hander for CTRL+C console exit
+// Handers for exit types
 process.on("SIGINT", closeBot.bind(null, "SIGINT"));
+process.on("uncaughtException", closeBot.bind(null, "uncaughtException"));
 
 function toApiCase(string) {
   var api = string.replace(/é/g,"e").replace(/[^\-0-9A-Za-z?!]/g,"").toLowerCase();
@@ -126,7 +124,5 @@ function closeBot(code) {
   console.log("Exit issued from: " + code);
   console.log("Logging off...");
   bot.destroy();
-  if(code === "chat") {
-    process.exit();
-  }
+  process.exit();
 }
