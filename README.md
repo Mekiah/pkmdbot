@@ -6,7 +6,7 @@ A Node.js Discord bot for retrieving pokemon information
 * discord.js
 * pokedex-promise-v2
 
-### Optional
+### Optional:
 * link to sprites archive
 
 ## Credit:
