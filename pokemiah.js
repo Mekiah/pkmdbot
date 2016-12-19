@@ -1,3 +1,4 @@
+var Promise = require("promise");
 var discord = require("discord.js");
 var login = require("./login.json");
 var settings = require("./settings.json");
@@ -22,10 +23,7 @@ bot.on("ready", function() {
   console.log("Logged in as " + bot.user.username + "#" + bot.user.discriminator);
 });
 
-bot.on("disconnect", function() {
-  console.log("Logging off...");
-  process.exit();
-});
+bot.on("disconnect", function() { });
 
 // Command syntax goes as follows[e.g.]: module[dex], command[moves], subcommand[tm], item[nidoking]
 bot.on("message", function(message) {
@@ -35,7 +33,7 @@ bot.on("message", function(message) {
     // Owner kill switch
     if(params[0] === "die" && message.author.username + "#" + message.author.discriminator === settings.owner) {
       console.log("Kill command issued from " + message.author.username + "#" + message.author.discriminator)
-      bot.destroy();
+      closeBot("chat");
       return;
     }
 
@@ -100,6 +98,11 @@ bot.on("message", function(message) {
   }
 });
 
+bot.login(login.token);
+
+// Hander for CTRL+C console exit
+process.on("SIGINT", closeBot.bind(null, "SIGINT"));
+
 function toApiCase(string) {
   var api = string.replace(/é/g,"e").replace(/[^\-0-9A-Za-z?!]/g,"").toLowerCase();
   if(api in convert)
@@ -118,4 +121,12 @@ function pluralCheck(o, s, p, list) {
   }
 }
 
-bot.login(login.token);
+// Cleanup for closing the bot application
+function closeBot(code) {
+  console.log("Exit issued from: " + code);
+  console.log("Logging off...");
+  bot.destroy();
+  if(code === "chat") {
+    process.exit();
+  }
+}

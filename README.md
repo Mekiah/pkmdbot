@@ -7,7 +7,7 @@ A Node.js Discord bot for retrieving pokemon information
 * pokedex-promise-v2
 
 ### Optional:
-* link to sprites archive
+* Download for animated model gifs folder: https://www.dropbox.com/sh/htlzoi9n03q4hs1/AADs50x93H9n2yogTrcPZG1Ka
 
 ## Credit:
 * Paul Hallett for hosting https://pokeapi.co/: https://github.com/PokeAPI/pokeapi
