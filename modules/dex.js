@@ -170,23 +170,20 @@ var commands = {
   				}
         }
         else {
-          if(details.sprite) {
-            var spritepromise = message.channel.sendFile(details.sprite);
-          }
-          Promise.resolve(spritepromise).then(function() {
-            reply = details.name + " #" + details.number + details.title
-            + "\nHeight: " + details.height
-            + "\nWeight: " + details.weight
-            + "\n" + pluralCheck("Type", "", "s", typeList) + ": " + typeList.join(" | ")
-            + "\n" + pluralCheck("Abilit", "y", "ies", abilityList) + ": " + abilityList.join(", ")
-            //+ "\n" + details.flavor
-            ;
+          reply = details.name + " #" + details.number + details.title
+          + "\nHeight: " + details.height
+          + "\nWeight: " + details.weight
+          + "\n" + pluralCheck("Type", "", "s", typeList) + ": " + typeList.join(" | ")
+          + "\n" + pluralCheck("Abilit", "y", "ies", abilityList) + ": " + abilityList.join(", ")
+          //+ "\n" + details.flavor
+          ;
 
+          if(details.sprite) {
+            message.channel.sendFile(details.sprite, details.formname + ".png", reply);
+          }
+          else {
             message.channel.sendMessage(reply);
-          })
-          .catch(function(e) {
-            console.log("Error in info Promise.resolve for " + name + ": " + e);
-          });
+          }
         }
       })
 			.catch(function(e) {
