@@ -55,11 +55,12 @@ var commands = {
 				height: "",
 				weight: "",
 				types: "",
-				abilities: "",
-        flavor: ""
+				abilities: ""
+        //,flavor: ""
 			}
 			var promises = [];
 
+      // Get api names using convert.json
       if(details.formname in convert.form2name) {
         details.pokemonname = convert.form2name[details.formname];
       }
@@ -75,18 +76,22 @@ var commands = {
 
 			promises.push(pkm.getPokemonSpeciesByName(details.speciesname)
 			.then(function(r) {
+        // Save species name to details
 				for(i in r.names) {
 					if(r.names[i].language.name === "en") {
 						details.name = r.names[i].name;
 						break;
 					}
 				}
+        /* Save flavor text to details
         for(i in r.flavor_text_entries) {
 					if(r.flavor_text_entries[i].language.name === "en" && r.flavor_text_entries[i].version.name === settings.version) {
 						details.flavor = r.flavor_text_entries[i].flavor_text;
 						break;
 					}
 				}
+        */
+        // Save national number to details
         for(i in r.pokedex_numbers) {
 					if(r.pokedex_numbers[i].pokedex.name === "national") {
 						details.number = r.pokedex_numbers[i].entry_number;
@@ -100,20 +105,15 @@ var commands = {
 
 			promises.push(pkm.getPokemonFormByName(details.formname)
 			.then(function(r) {
-        // or form_names
+        // Save form name to details
 				for(i in r.names) {
 					if(r.names[i].language.name === "en") {
 						details.title = "\n*" + r.names[i].name + "*";
 						break;
 					}
 				}
-        // or shiny
-        if(r.sprites.front_shiny) {
-          details.sprite = r.sprites.front_shiny;
-        }
-        else {
-          details.sprite = r.sprites.front_default;
-        }
+        // Save sprite to details
+        details.sprite = r.sprites.front_default;
 			})
 			.catch(function(e) {
         error = e;
@@ -121,7 +121,7 @@ var commands = {
 
 			promises.push(pkm.getPokemonByName(details.pokemonname)
 			.then(function(r) {
-
+        // Save types to list
 				types = slotSort(r.types);
 				typeList = [];
 				for(i in types) {
@@ -133,6 +133,7 @@ var commands = {
           }
 				}
 
+        // Save abilities to list with hidden check
 				abilities = slotSort(r.abilities);
 				abilityList = [];
 				for(i in abilities) {
@@ -143,10 +144,11 @@ var commands = {
             abilityList.push(firstUpper(abilities[i].ability.name));
           }
           if(abilities[i].is_hidden) {
-            abilityList[i] = "*" + abilityList[i] + "*";
+            abilityList[i] = "**" + abilityList[i] + "**";
           }
 				}
 
+        // Save height, weight, and both lists to details
   			details.height = (r.height / 10) + " m";
   			details.weight = (r.weight / 10) + " kg";
   			details.types = typeList;
@@ -172,13 +174,14 @@ var commands = {
             var spritepromise = message.channel.sendFile(details.sprite);
           }
           Promise.resolve(spritepromise).then(function() {
-
             reply = details.name + " #" + details.number + details.title
             + "\nHeight: " + details.height
             + "\nWeight: " + details.weight
             + "\n" + pluralCheck("Type", "", "s", typeList) + ": " + typeList.join(" | ")
             + "\n" + pluralCheck("Abilit", "y", "ies", abilityList) + ": " + abilityList.join(", ")
-            + "\n" + details.flavor;
+            //+ "\n" + details.flavor
+            ;
+
             message.channel.sendMessage(reply);
           })
           .catch(function(e) {

@@ -34,6 +34,7 @@ bot.on("message", function(message) {
 
     // Owner kill switch
     if(params[0] === "die" && message.author.username + "#" + message.author.discriminator === settings.owner) {
+      console.log("Kill command issued from " + message.author.username + "#" + message.author.discriminator)
       bot.destroy();
       return;
     }
