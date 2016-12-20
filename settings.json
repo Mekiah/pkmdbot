@@ -3,15 +3,15 @@
   "owner": "Mekiah#1942",
   "version": "omega-ruby",
   "count": 721,
+  "modules": {
+    "dex": true
+  },
+  "default-module": "dex",
   "help": {
     "help": true,
     "": true,
     "undefined": true
   },
-  "modules": {
-    "dex": true
-  },
-  "default-module": "dex",
   "pokedex": {
     "protocol": "http",
     "hostName": "localhost:8000",
