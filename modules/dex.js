@@ -174,7 +174,6 @@ var commands = {
           else if(fs.existsSync("./sprites/" + details.formname + ".png")) {
             details.sprite = "./sprites/" + details.formname + ".png";
           }
-					console.log(details.formname);
 
           // Build details into a message
           reply = details.name + " #" + details.number + details.title
