@@ -4,7 +4,8 @@
   "description": "A Node.js Discord bot for retrieving pokemon information",
   "main": "pokemiah.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node pokemiah.js"
   },
   "repository": {
     "type": "git",
