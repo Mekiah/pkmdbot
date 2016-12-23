@@ -1,3 +1,4 @@
+require('dotenv').config();
 var Promise = require("promise");
 var discord = require("discord.js");
 var login = require("./login.json");
@@ -95,7 +96,7 @@ bot.on("message", function(message) {
   }
 });
 
-bot.login(login.token);
+bot.login(process.env.DISCORD_TOKEN);
 
 // Handers for exit types
 process.on("SIGINT", closeBot.bind(null, "SIGINT"));

@@ -24,6 +24,7 @@
   "homepage": "https://github.com/Mekiah/pokemiah#readme",
   "dependencies": {
     "discord.js": "^10.0.1",
+    "dotenv": "^2.0.0",
     "pokedex-promise-v2": "^3.0.1",
     "promise": "^7.1.1"
   }
