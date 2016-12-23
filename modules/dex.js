@@ -70,6 +70,7 @@ var commands = {
 
 			promises.push(pkm.getPokemonSpeciesByName(details.speciesname)
 			.then(function(r) {
+				details.speciesname = r.name;
         // Save species name to details
 				for(i in r.names) {
 					if(r.names[i].language.name === "en") {
@@ -99,6 +100,7 @@ var commands = {
 
 			promises.push(pkm.getPokemonFormByName(details.formname)
 			.then(function(r) {
+				details.formname = r.name;
         // Save form name to details
 				for(i in r.names) {
 					if(r.names[i].language.name === "en") {
@@ -115,6 +117,7 @@ var commands = {
 
 			promises.push(pkm.getPokemonByName(details.pokemonname)
 			.then(function(r) {
+				details.pokemonname = r.name;
         // Save types to list
 				types = slotSort(r.types);
 				typeList = [];
@@ -171,6 +174,7 @@ var commands = {
           else if(fs.existsSync("./sprites/" + details.formname + ".png")) {
             details.sprite = "./sprites/" + details.formname + ".png";
           }
+					console.log(details.formname);
 
           // Build details into a message
           reply = details.name + " #" + details.number + details.title

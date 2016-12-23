@@ -13,9 +13,6 @@
     "undefined": true
   },
   "pokedex": {
-    "protocol": "http",
-    "hostName": "localhost:8000",
-    "versionPath": "/api/v2/",
     "cacheLimit": 60000,
     "tiemout": 5000
   }

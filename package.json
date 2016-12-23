@@ -1,14 +1,14 @@
 {
-  "name": "pkmdbot",
+  "name": "pokemiah",
   "version": "1.0.0",
-  "description": "A Discord bot using discord.js as an api and pokemondb.net for information",
-  "main": "pkmdbot.js",
+  "description": "A Node.js Discord bot for retrieving pokemon information",
+  "main": "pokemiah.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Mekiah/pkmdbot.git"
+    "url": "git+https://github.com/Mekiah/pokemiah.git"
   },
   "keywords": [
     "discord",
@@ -18,9 +18,9 @@
   "author": "Mekiah",
   "license": "UNLICENSED",
   "bugs": {
-    "url": "https://github.com/Mekiah/pkmdbot/issues"
+    "url": "https://github.com/Mekiah/pokemiah/issues"
   },
-  "homepage": "https://github.com/Mekiah/pkmdbot#readme",
+  "homepage": "https://github.com/Mekiah/pokemiah#readme",
   "dependencies": {
     "discord.js": "^10.0.1",
     "pokedex-promise-v2": "^3.0.1",
