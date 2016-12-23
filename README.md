@@ -12,7 +12,7 @@ To set up the bot to a functioning state:
 ```
 $ npm install
 ```
-* Remove .example from the end of login.json and replace "your token" with bot token
+* Remove .example from the end of .env and replace yourtokenhere with bot token
 * **Optionally** download the [fully animated 3D images](https://www.dropbox.com/sh/htlzoi9n03q4hs1/AADs50x93H9n2yogTrcPZG1Ka) to a sprites folder in the project directory
 
 To configure the bot edit settings.json:
