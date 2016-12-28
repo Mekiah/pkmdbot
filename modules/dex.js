@@ -55,18 +55,8 @@ var commands = {
 			var promises = [];
 
       // Get api names using convert.json
-      if(details.formname in convert.form2name) {
-        details.pokemonname = convert.form2name[details.formname];
-      }
-      else {
-        details.pokemonname = details.formname;
-      }
-      if(details.formname in convert.form2species) {
-        details.speciesname = convert.form2species[details.formname];
-      }
-      else {
-        details.speciesname = details.formname;
-      }
+			details.pokemonname = convertName(details.formname, "form2name");
+			details.speciesname = convertName(details.formname, "form2species");
 
 			promises.push(pkm.getPokemonSpeciesByName(details.speciesname)
 			.then(function(r) {
@@ -122,24 +112,14 @@ var commands = {
 				types = slotSort(r.types);
 				typeList = [];
 				for(i in types) {
-          if(types[i].type.name in convert.type) {
-            typeList.push(convert.type[types[i].type.name]);
-          }
-          else {
-            typeList.push(firstUpper(types[i].type.name));
-          }
+					typeList.push(convertName(types[i].type.name, "type"));
 				}
 
         // Save abilities to list with hidden check
 				abilities = slotSort(r.abilities);
 				abilityList = [];
 				for(i in abilities) {
-          if(abilities[i].ability.name in convert.ability) {
-            abilityList.push(convert.ability[abilities[i].ability.name]);
-          }
-          else {
-            abilityList.push(firstUpper(abilities[i].ability.name));
-          }
+					abilityList.push(convertName(abilities[i].ability.name, "ability"));
           if(abilities[i].is_hidden) {
             abilityList[i] = "**" + abilityList[i] + "**";
           }
@@ -207,14 +187,29 @@ var commands = {
 		},
 
 		sub: {
-			one: "one",
-			two: "two",
-			three: "three"
+			one: "1",
+			two: "2",
+			three: "3"
 		},
 
 		run: function(message, name, command) {
 			if(command === undefined) {
-				command = "one";
+				command = "1";
+			}
+			message.channel.sendMessage("This command is a skeleton for future commands which include subs.\n"
+			 + "Passed arguments are: sub:" + command + " name:" + name);
+		}
+	},
+
+	type: {
+		help: function(message) {
+			message.channel.sendMessage("Returns type of a pokemon\nUsage: "
+			 + settings.prefix + "dex type <name>\n");
+		},
+
+		run: function(message, name, command) {
+			if(command === undefined) {
+				command = "1";
 			}
 			message.channel.sendMessage("This command is a skeleton for future commands which include subs.\n"
 			 + "Passed arguments are: sub:" + command + " name:" + name);
@@ -251,6 +246,20 @@ function pluralCheck(o, s, p, list) {
   else {
     return o + s;
   }
+}
+
+// Send name to convert json using target field
+function convertName(name, target) {
+	console.log("convertName \"" + name + "\" \"" + target +"\"");
+	if(name in convert[target]) {
+		name = convert[target][name];
+	}
+	else if(["type", "ability", "move"].indexOf(target) !== -1) {
+		console.log("else if success");
+		name = firstUpper(name);
+	}
+	console.log("return \"" + name + "\"");
+	return name;
 }
 
 module.exports = commands;

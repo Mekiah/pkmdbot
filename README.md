@@ -34,5 +34,6 @@ $ node pokemiah.js
 * Paul Hallett for hosting https://pokeapi.co/: https://github.com/PokeAPI/pokeapi
 * http://www.pkparaiso.com/ for all animated model gifs except the ones mentioned below
 * http://pldh.net/ for animated model gifs of the extra Arceus forms and the extra Genesect forms
+* http://pokemonshowdown.com/ for the animated model gif of Belle Pikachu
 * https://veekun.com/ for the non-animated model pngs of the extra Furfrou forms
-* http://www.serebii.net/ for the non-animated model pngs of the five costume Pikachu forms, the Unknown Arceus sprite, and the Spiky-eared Pichu sprite
+* http://www.serebii.net/ for the non-animated model pngs of the four other costume Pikachu forms, the Unknown Arceus sprite, and the Spiky-eared Pichu sprite
