@@ -9,7 +9,7 @@ var pkm = new Pokedex(settings.pokedex);
 var commands = {
 	// Returns what !dex does, usage, and list of commands e.g. type, moves, effectiveness
 	help: function(message) {
-		message.channel.sendMessage("Returns information on a pokemon\nNote: Not all commands use subs\nUsage: "
+		message.reply("Returns information on a pokemon\nNote: Not all commands use subs\nUsage: "
 		 + settings.prefix + "dex <command> <sub> <name>\n"
 		 + pluralCheck("Command", "", "s", commands) + " (default is \"info\"): "
 		 + Object.keys(commands).filter(function(r) {if(r !== 'run') {return r;}}).join(", "));
@@ -23,16 +23,16 @@ var commands = {
 	// Returns basic details of a pokemon
 	info: {
 		help: function(message) {
-			message.channel.sendMessage("Returns basic details of a pokemon\nUsage: "
+			message.reply("Returns basic details of a pokemon\nUsage: "
 			 + settings.prefix + "dex info <name>\n");
 		},
 
 		run: function(message, name) {
-      console.log("Serving \"" + "!dex info " + name + "\" to \""
+      console.log("Serving \"" + settings.prefix + "dex info " + name + "\" to \""
       + message.author.username + "#" + message.author.discriminator +"\"");
 			// Skips api check if dex # out of range
 			if(parseInt(name) > settings.count) {
-				message.channel.sendMessage("404 - Not found.");
+				message.reply("404 - Not found.");
 				return;
 			}
 
@@ -139,10 +139,10 @@ var commands = {
 			.then(function() {
         if(error) {
           if('statusCode' in error && 'error' in error && 'detail' in error.error) {
-  					message.channel.sendMessage(error.statusCode + " - " + error.error.detail);
+  					message.reply(error.statusCode + " - " + error.error.detail);
   				}
   				else {
-  					message.channel.sendMessage(error.name + " - " + error.message);
+  					message.reply(error.name + " - " + error.message);
   					console.log(error.name + " - " + error.message);
   				}
         }
@@ -174,45 +174,343 @@ var commands = {
         }
       })
 			.catch(function(e) {
-        console.log("Error in info Promise.all for " + name + ": " + e);
+        console.log("Error in info Promise.all: " + e);
       });
 		}
 	},
 
-	multi: {
+	stats: {
 		help: function(message) {
-			message.channel.sendMessage("Example of a command with subs\nUsage: "
-			 + settings.prefix + "dex multi <subcommand> <name>\n"
-			 + pluralCheck("Sub", "", "s", commands.multi.sub) + " (default is \"one\"): " + Object.keys(commands.multi.sub).join(", "));
+			message.reply("Returns base stats of a pokemon\nUsage: "
+			 + settings.prefix + "dex stats <sub> <name>\n"
+			 + pluralCheck("Sub", "", "s", commands.stats.sub) + " (default is \"all\"): " + Object.keys(commands.stats.sub).join(", "));
 		},
 
 		sub: {
-			one: "1",
-			two: "2",
-			three: "3"
+			all: "all",
+			hp: "hp",
+			atk: "attack",
+			def: "defense",
+			spa: "special-attack",
+			spd: "special-defense",
+			spe: "speed"
 		},
 
 		run: function(message, name, command) {
 			if(command === undefined) {
-				command = "1";
+				command = "all";
 			}
-			message.channel.sendMessage("This command is a skeleton for future commands which include subs.\n"
-			 + "Passed arguments are: sub:" + command + " name:" + name);
+			console.log("Serving \"" + settings.prefix + "dex stats " + command + " " + name + "\" to \""
+      + message.author.username + "#" + message.author.discriminator +"\"");
+			// Skips api check if dex # out of range
+			if(parseInt(name) > settings.count) {
+				message.reply("404 - Not found.");
+				return;
+			}
+
+			var reply;
+			var error;
+			var details = {
+        pokemonname: "",
+        formname: name,
+				hp: "HP: ",
+				attack: "Atk: ",
+				defense: "Def: ",
+				"special-attack": "SpA: ",
+				"special-defense": "SpD: ",
+				speed: "Spe: "
+			}
+
+			// Get api names using convert.json
+			details.pokemonname = convertName(details.formname, "form2name");
+
+			var promise = pkm.getPokemonByName(details.pokemonname)
+			.then(function(r) {
+				for(i in r.stats) {
+					details[r.stats[i].stat.name] += r.stats[i].base_stat;
+				}
+			})
+			.catch(function(e) {
+        error = e;
+			});
+
+			Promise.resolve(promise)
+			.then(function() {
+        if(error) {
+          if('statusCode' in error && 'error' in error && 'detail' in error.error) {
+  					message.reply(error.statusCode + " - " + error.error.detail);
+  				}
+  				else {
+  					message.reply(error.name + " - " + error.message);
+  					console.log(error.name + " - " + error.message);
+  				}
+        }
+        else {
+          // Build details into a message
+					if(command === "all") {
+						reply = details.hp + ", " +
+						details.attack + ", " +
+						details.defense + ", " +
+						details["special-attack"] + ", " +
+						details["special-defense"] + ", " +
+						details.speed;
+					}
+					else {
+						reply = details[command];
+					}
+
+          message.reply(reply);
+        }
+      })
+			.catch(function(e) {
+        console.log("Error in info Promise.resolve: " + e);
+      });
 		}
 	},
 
+	// Returns type of a pokemon
 	type: {
 		help: function(message) {
-			message.channel.sendMessage("Returns type of a pokemon\nUsage: "
+			message.reply("Returns type of a pokemon\nUsage: "
 			 + settings.prefix + "dex type <name>\n");
 		},
 
-		run: function(message, name, command) {
-			if(command === undefined) {
-				command = "1";
+		run: function(message, name) {
+      console.log("Serving \"" + settings.prefix + "dex type " + name + "\" to \""
+      + message.author.username + "#" + message.author.discriminator +"\"");
+			// Skips api check if dex # out of range
+			if(parseInt(name) > settings.count) {
+				message.reply("404 - Not found.");
+				return;
 			}
-			message.channel.sendMessage("This command is a skeleton for future commands which include subs.\n"
-			 + "Passed arguments are: sub:" + command + " name:" + name);
+
+			var reply;
+			var error;
+			var details = {
+        pokemonname: "",
+        formname: name,
+				types: ""
+			}
+
+      // Get api names using convert.json
+			details.pokemonname = convertName(details.formname, "form2name");
+
+			var promise = pkm.getPokemonByName(details.pokemonname)
+			.then(function(r) {
+        // Save types to list
+				types = slotSort(r.types);
+				typeList = [];
+				for(i in types) {
+					typeList.push(convertName(types[i].type.name, "type"));
+				}
+
+  			details.types = typeList;
+			})
+			.catch(function(e) {
+        error = e;
+			});
+
+			Promise.resolve(promise)
+			.then(function() {
+        if(error) {
+          if('statusCode' in error && 'error' in error && 'detail' in error.error) {
+  					message.reply(error.statusCode + " - " + error.error.detail);
+  				}
+  				else {
+  					message.reply(error.name + " - " + error.message);
+  					console.log(error.name + " - " + error.message);
+  				}
+        }
+        else {
+          // Build details into a message
+          reply = typeList.join(" | ");
+          message.reply(reply);
+        }
+      })
+			.catch(function(e) {
+        console.log("Error in info Promise.resolve: " + e);
+      });
+		}
+	},
+
+	// Returns ability o a pokemon
+	ability: {
+		help: function(message) {
+			message.reply("Returns ability of a pokemon\nUsage: "
+			 + settings.prefix + "dex ability <name>\n");
+		},
+
+		run: function(message, name) {
+      console.log("Serving \"" + settings.prefix + "dex ability " + name + "\" to \""
+      + message.author.username + "#" + message.author.discriminator +"\"");
+			// Skips api check if dex # out of range
+			if(parseInt(name) > settings.count) {
+				message.reply("404 - Not found.");
+				return;
+			}
+
+			var reply;
+			var error;
+			var details = {
+        pokemonname: "",
+        formname: name,
+				abilities: ""
+			}
+
+      // Get api names using convert.json
+			details.pokemonname = convertName(details.formname, "form2name");
+
+			var promise = pkm.getPokemonByName(details.pokemonname)
+			.then(function(r) {
+        // Save abilities to list
+				abilities = slotSort(r.abilities);
+				abilityList = [];
+				for(i in abilities) {
+					abilityList.push(convertName(abilities[i].ability.name, "ability"));
+				}
+
+  			details.abilities = abilityList;
+			})
+			.catch(function(e) {
+        error = e;
+			});
+
+			Promise.resolve(promise)
+			.then(function() {
+        if(error) {
+          if('statusCode' in error && 'error' in error && 'detail' in error.error) {
+  					message.reply(error.statusCode + " - " + error.error.detail);
+  				}
+  				else {
+  					message.reply(error.name + " - " + error.message);
+  					console.log(error.name + " - " + error.message);
+  				}
+        }
+        else {
+          // Build details into a message
+          reply = abilityList.join(" | ");
+          message.reply(reply);
+        }
+      })
+			.catch(function(e) {
+        console.log("Error in info Promise.resolve: " + e);
+      });
+		}
+	},
+
+	// Returns height o a pokemon
+	height: {
+		help: function(message) {
+			message.reply("Returns height of a pokemon\nUsage: "
+			 + settings.prefix + "dex height <name>\n");
+		},
+
+		run: function(message, name) {
+      console.log("Serving \"" + settings.prefix + "dex height " + name + "\" to \""
+      + message.author.username + "#" + message.author.discriminator +"\"");
+			// Skips api check if dex # out of range
+			if(parseInt(name) > settings.count) {
+				message.reply("404 - Not found.");
+				return;
+			}
+
+			var reply;
+			var error;
+			var details = {
+        pokemonname: "",
+        formname: name,
+				height: ""
+			}
+
+      // Get api names using convert.json
+			details.pokemonname = convertName(details.formname, "form2name");
+
+			var promise = pkm.getPokemonByName(details.pokemonname)
+			.then(function(r) {
+  			details.height = (r.height / 10) + " m";
+			})
+			.catch(function(e) {
+        error = e;
+			});
+
+			Promise.resolve(promise)
+			.then(function() {
+        if(error) {
+          if('statusCode' in error && 'error' in error && 'detail' in error.error) {
+  					message.reply(error.statusCode + " - " + error.error.detail);
+  				}
+  				else {
+  					message.reply(error.name + " - " + error.message);
+  					console.log(error.name + " - " + error.message);
+  				}
+        }
+        else {
+          // Build details into a message
+          reply = details.height;
+          message.reply(reply);
+        }
+      })
+			.catch(function(e) {
+        console.log("Error in info Promise.resolve: " + e);
+      });
+		}
+	},
+
+	// Returns weight o a pokemon
+	weight: {
+		help: function(message) {
+			message.reply("Returns weight of a pokemon\nUsage: "
+			 + settings.prefix + "dex weight <name>\n");
+		},
+
+		run: function(message, name) {
+      console.log("Serving \"" + settings.prefix + "dex weight " + name + "\" to \""
+      + message.author.username + "#" + message.author.discriminator +"\"");
+			// Skips api check if dex # out of range
+			if(parseInt(name) > settings.count) {
+				message.reply("404 - Not found.");
+				return;
+			}
+
+			var reply;
+			var error;
+			var details = {
+        pokemonname: "",
+        formname: name,
+				weight: ""
+			}
+
+      // Get api names using convert.json
+			details.pokemonname = convertName(details.formname, "form2name");
+
+			var promise = pkm.getPokemonByName(details.pokemonname)
+			.then(function(r) {
+  			details.weight = (r.weight / 10) + " kg";
+			})
+			.catch(function(e) {
+        error = e;
+			});
+
+			Promise.resolve(promise)
+			.then(function() {
+        if(error) {
+          if('statusCode' in error && 'error' in error && 'detail' in error.error) {
+  					message.reply(error.statusCode + " - " + error.error.detail);
+  				}
+  				else {
+  					message.reply(error.name + " - " + error.message);
+  					console.log(error.name + " - " + error.message);
+  				}
+        }
+        else {
+          // Build details into a message
+          reply = details.weight;
+          message.reply(reply);
+        }
+      })
+			.catch(function(e) {
+        console.log("Error in info Promise.resolve: " + e);
+      });
 		}
 	}
 }
@@ -250,15 +548,12 @@ function pluralCheck(o, s, p, list) {
 
 // Send name to convert json using target field
 function convertName(name, target) {
-	console.log("convertName \"" + name + "\" \"" + target +"\"");
 	if(name in convert[target]) {
 		name = convert[target][name];
 	}
 	else if(["type", "ability", "move"].indexOf(target) !== -1) {
-		console.log("else if success");
 		name = firstUpper(name);
 	}
-	console.log("return \"" + name + "\"");
 	return name;
 }
 

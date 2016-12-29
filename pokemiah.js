@@ -70,7 +70,14 @@ bot.on("message", function(message) {
 
         // Sub found and passed into function
         else if("sub" in modules[params[0]][params[1]] && params[2] in modules[params[0]][params[1]].sub) {
-          modules[params[0]][params[1]].run(message, toApiCase(params.slice(3).join("-")), modules[params[0]][params[1]].sub[params[2]]);
+          // No name specified, call command help
+          if(params.slice(3).length === 0) {
+            modules[params[0]][params[1]].help(message);
+          }
+          // Name found and passed into function
+          else {
+            modules[params[0]][params[1]].run(message, toApiCase(params.slice(3).join("-")), modules[params[0]][params[1]].sub[params[2]]);
+          }
         }
 
         // Sub not found, push rest of input into default sub api call
