@@ -20,10 +20,10 @@ var commands = {
 		commands.info.run(message, name);
 	},
 
-	// Returns basic details of a pokemon
+	// Returns the basic details of a pokemon
 	info: {
 		help: function(message) {
-			message.reply("Returns basic details of a pokemon\nUsage: "
+			message.reply("Returns the basic details of a pokemon\nUsage: "
 			 + settings.prefix + "dex info <name>\n");
 		},
 
@@ -179,9 +179,10 @@ var commands = {
 		}
 	},
 
+	// Returns the base stats of a pokemon
 	stats: {
 		help: function(message) {
-			message.reply("Returns base stats of a pokemon\nUsage: "
+			message.reply("Returns the base stats of a pokemon\nUsage: "
 			 + settings.prefix + "dex stats <sub> <name>\n"
 			 + pluralCheck("Sub", "", "s", commands.stats.sub) + " (default is \"all\"): " + Object.keys(commands.stats.sub).join(", "));
 		},
@@ -268,10 +269,100 @@ var commands = {
 		}
 	},
 
-	// Returns type of a pokemon
+	// Returns the ev yield of a pokemon
+	evs: {
+		help: function(message) {
+			message.reply("Returns the ev yield of a pokemon\nUsage: "
+			 + settings.prefix + "dex evs <sub> <name>\n"
+			 + pluralCheck("Sub", "", "s", commands.evs.sub) + " (default is \"all\"): " + Object.keys(commands.evs.sub).join(", "));
+		},
+
+		sub: {
+			all: "all",
+			hp: "hp",
+			atk: "attack",
+			def: "defense",
+			spa: "special-attack",
+			spd: "special-defense",
+			spe: "speed"
+		},
+
+		run: function(message, name, command) {
+			if(command === undefined) {
+				command = "all";
+			}
+			console.log("Serving \"" + settings.prefix + "dex evs " + command + " " + name + "\" to \""
+			+ message.author.username + "#" + message.author.discriminator +"\"");
+			// Skips api check if dex # out of range
+			if(parseInt(name) > settings.count) {
+				message.reply("404 - Not found.");
+				return;
+			}
+
+			var reply;
+			var error;
+			var details = {
+				pokemonname: "",
+				formname: name,
+				hp: "HP: ",
+				attack: "Atk: ",
+				defense: "Def: ",
+				"special-attack": "SpA: ",
+				"special-defense": "SpD: ",
+				speed: "Spe: "
+			}
+
+			// Get api names using convert.json
+			details.pokemonname = convertName(details.formname, "form2name");
+
+			var promise = pkm.getPokemonByName(details.pokemonname)
+			.then(function(r) {
+				for(i in r.stats) {
+					details[r.stats[i].stat.name] += r.stats[i].effort;
+				}
+			})
+			.catch(function(e) {
+				error = e;
+			});
+
+			Promise.resolve(promise)
+			.then(function() {
+				if(error) {
+					if('statusCode' in error && 'error' in error && 'detail' in error.error) {
+						message.reply(error.statusCode + " - " + error.error.detail);
+					}
+					else {
+						message.reply(error.name + " - " + error.message);
+						console.log(error.name + " - " + error.message);
+					}
+				}
+				else {
+					// Build details into a message
+					if(command === "all") {
+						reply = details.hp + ", " +
+						details.attack + ", " +
+						details.defense + ", " +
+						details["special-attack"] + ", " +
+						details["special-defense"] + ", " +
+						details.speed;
+					}
+					else {
+						reply = details[command];
+					}
+
+					message.reply(reply);
+				}
+			})
+			.catch(function(e) {
+				console.log("Error in info Promise.resolve: " + e);
+			});
+		}
+	},
+
+	// Returns the type of a pokemon
 	type: {
 		help: function(message) {
-			message.reply("Returns type of a pokemon\nUsage: "
+			message.reply("Returns the type of a pokemon\nUsage: "
 			 + settings.prefix + "dex type <name>\n");
 		},
 
@@ -333,10 +424,164 @@ var commands = {
 		}
 	},
 
-	// Returns ability o a pokemon
+	// Returns the type effectiveness of a pokemon
+	effect: {
+		help: function(message) {
+			message.reply("Returns the type effectiveness of a pokemon\nUsage: "
+			 + settings.prefix + "dex effect <sub> <name>\n"
+			 + pluralCheck("Sub", "", "s", commands.effect.sub) + " (default is \"all\"): " + Object.keys(commands.effect.sub).join(", "));
+		},
+
+		sub: {
+			all: "all",
+			strong: 0.5,
+			weak: 2,
+			immune: 0,
+			neutral: 1
+		},
+
+		run: function(message, name, command) {
+			if(command === undefined) {
+				command = "all";
+			}
+      console.log("Serving \"" + settings.prefix + "dex effect " + name + "\" to \""
+      + message.author.username + "#" + message.author.discriminator +"\"");
+			// Skips api check if dex # out of range
+			if(parseInt(name) > settings.count) {
+				message.reply("404 - Not found.");
+				return;
+			}
+
+			var reply;
+			var error;
+			var details = {
+        pokemonname: "",
+        formname: name,
+				types: ""
+			}
+			var effectiveness = {
+				normal: 1,
+				fighting: 1,
+				flying: 1,
+				poison: 1,
+				ground: 1,
+				rock: 1,
+				bug: 1,
+				ghost: 1,
+				steel: 1,
+				fire: 1,
+				water: 1,
+				grass: 1,
+				electric: 1,
+				psychic: 1,
+				ice: 1,
+				dragon: 1,
+				dark: 1,
+				fairy: 1
+			}
+			var multiplier = {
+				1: [],
+				2: [],
+				4: [],
+				0.5: [],
+				0.25: [],
+				0: []
+			}
+
+      // Get api names using convert.json
+			details.pokemonname = convertName(details.formname, "form2name");
+
+			var promise = pkm.getPokemonByName(details.pokemonname)
+			.then(function(r) {
+        // Save types to list
+				types = slotSort(r.types);
+				typeList = [];
+				for(i in types) {
+					typeList.push(types[i].type.name);
+				}
+
+  			details.types = typeList;
+			})
+			.catch(function(e) {
+        error = e;
+			});
+
+			Promise.resolve(promise)
+			.then(function() {
+        if(error) {
+          if('statusCode' in error && 'error' in error && 'detail' in error.error) {
+  					message.reply(error.statusCode + " - " + error.error.detail);
+  				}
+  				else {
+  					message.reply(error.name + " - " + error.message);
+  					console.log(error.name + " - " + error.message);
+  				}
+        }
+        else {
+					var promises = [];
+					for(i in details.types) {
+						promises.push(pkm.getTypeByName(details.types[i])
+						.then(function(r) {
+							for(j in r.damage_relations.half_damage_from) {
+								effectiveness[r.damage_relations.half_damage_from[j].name] *= 0.5;
+							}
+							for(j in r.damage_relations.double_damage_from) {
+								effectiveness[r.damage_relations.double_damage_from[j].name] *= 2;
+							}
+							for(j in r.damage_relations.no_damage_from) {
+								effectiveness[r.damage_relations.no_damage_from[j].name] *= 0;
+							}
+						}).
+						catch(function(e) {
+							error = e;
+						}));
+					}
+
+					Promise.all(promises)
+					.then(function() {
+						if(error) {
+							if('statusCode' in error && 'error' in error && 'detail' in error.error) {
+								message.reply(error.statusCode + " - " + error.error.detail);
+							}
+							else {
+								message.reply(error.name + " - " + error.message);
+								console.log(error.name + " - " + error.message);
+							}
+						}
+						else {
+							for(i in effectiveness) {
+								multiplier[effectiveness[i]].push(convertName(i, "type"));
+							}
+							var replyList = {}
+							for(i in multiplier)
+							{
+								if(multiplier[i].length !== 0 && (command === "all" || command === i || command * command === i))	{
+									replyList[i] = "\n" + i + "x: " + multiplier[i].join(", ");
+								}
+								else {
+									replyList[i] = "";
+								}
+							}
+							reply = replyList[1] + replyList[2] + replyList[4] + replyList[0.5] + replyList[0.25] + replyList[0];
+
+							message.reply(reply);
+						}
+					})
+					.catch(function(e) {
+						console.log("Error in info Promise.all: " + e);
+					});
+        }
+      })
+			.catch(function(e) {
+        console.log("Error in info Promise.resolve: " + e);
+      });
+		}
+	},
+
+	// Returns the ability of a pokemon
 	ability: {
 		help: function(message) {
-			message.reply("Returns ability of a pokemon\nUsage: "
+			message.reply("Returns the ability of a pokemon\nUsage: "
 			 + settings.prefix + "dex ability <name>\n");
 		},
 
@@ -398,10 +643,10 @@ var commands = {
 		}
 	},
 
-	// Returns height o a pokemon
+	// Returns the height of a pokemon
 	height: {
 		help: function(message) {
-			message.reply("Returns height of a pokemon\nUsage: "
+			message.reply("Returns the height of a pokemon\nUsage: "
 			 + settings.prefix + "dex height <name>\n");
 		},
 
@@ -456,10 +701,10 @@ var commands = {
 		}
 	},
 
-	// Returns weight o a pokemon
+	// Returns the weight of a pokemon
 	weight: {
 		help: function(message) {
-			message.reply("Returns weight of a pokemon\nUsage: "
+			message.reply("Returns the weight of a pokemon\nUsage: "
 			 + settings.prefix + "dex weight <name>\n");
 		},
 
