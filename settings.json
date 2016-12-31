@@ -2,6 +2,7 @@
   "prefix": "!",
   "owner": "Mekiah#1942",
   "version": "omega-ruby",
+  "versions": "omega-ruby-alpha-sapphire",
   "count": 721,
   "modules": {
     "dex": true

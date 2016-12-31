@@ -359,6 +359,98 @@ var commands = {
 		}
 	},
 
+	// Returns the moves of a pokemon
+	moves: {
+		help: function(message) {
+			message.reply("Returns the moves of a pokemon\nUsage: "
+			 + settings.prefix + "dex moves <sub> <name>\n"
+			 + pluralCheck("Sub", "", "s", commands.moves.sub) + " (default is \"learn\"): " + Object.keys(commands.moves.sub).join(", "));
+		},
+
+		sub: {
+			learn: "level-up",
+			egg: "egg",
+			tutor: "tutor",
+			tm: "machine"
+		},
+
+		run: function(message, name, command) {
+			if(command === undefined) {
+				command = "level-up";
+			}
+			console.log("Serving \"" + settings.prefix + "dex moves " + command + " " + name + "\" to \""
+      + message.author.username + "#" + message.author.discriminator +"\"");
+			// Skips api check if dex # out of range
+			if(parseInt(name) > settings.count) {
+				message.reply("404 - Not found.");
+				return;
+			}
+
+			var reply;
+			var error;
+			var details = {
+        pokemonname: "",
+        formname: name
+			}
+			var movesList = {}
+
+			// Get api names using convert.json
+			details.pokemonname = convertName(details.formname, "form2name");
+
+			var promise = pkm.getPokemonByName(details.pokemonname)
+			.then(function(r) {
+				// Iterates through moves and version specifics, if settings version and sub match up, add to push to list in object at level acquired
+				for(i in r.moves) {
+					for(j in r.moves[i].version_group_details) {
+						if(settings.versions === r.moves[i].version_group_details[j].version_group.name
+							 && command === r.moves[i].version_group_details[j].move_learn_method.name) {
+								 if(movesList[r.moves[i].version_group_details[j].level_learned_at] === undefined) {
+									 movesList[r.moves[i].version_group_details[j].level_learned_at] = [];
+								 }
+								 movesList[r.moves[i].version_group_details[j].level_learned_at].push(convertName(r.moves[i].move.name, "move"));
+							 }
+					}
+				}
+			})
+			.catch(function(e) {
+        error = e;
+			});
+
+			Promise.resolve(promise)
+			.then(function() {
+        if(error) {
+          if('statusCode' in error && 'error' in error && 'detail' in error.error) {
+  					message.reply(error.statusCode + " - " + error.error.detail);
+  				}
+  				else {
+  					message.reply(error.name + " - " + error.message);
+  					console.log(error.name + " - " + error.message);
+  				}
+        }
+        else {
+					replyList = [];
+					level = "";
+					for(i in movesList) {
+						if(command === "level-up") {
+							level = i + " - ";
+						}
+						replyList.push(level + movesList[i].sort().join(", "));
+					}
+
+					if(replyList.length === 0) {
+						message.reply("No moves.");
+					}
+					else {
+						message.reply(replyList.join(", "));
+					}
+        }
+      })
+			.catch(function(e) {
+        console.log("Error in info Promise.resolve: " + e);
+      });
+		}
+	},
+
 	// Returns the type of a pokemon
 	type: {
 		help: function(message) {
