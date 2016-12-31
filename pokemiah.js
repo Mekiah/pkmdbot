@@ -3,7 +3,6 @@ if(fs.existsSync("./.env")) {
   require('dotenv').config();
 }
 
-var Promise = require("promise");
 var discord = require("discord.js");
 var settings = require("./settings.json");
 var convert = require("./convert.json").read2form;
