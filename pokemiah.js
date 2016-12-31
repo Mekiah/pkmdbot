@@ -1,6 +1,6 @@
 var fs = require("fs");
 if(fs.existsSync("./.env")) {
-  require('dotenv').config();
+  require("dotenv").config();
 }
 
 var discord = require("discord.js");
@@ -49,7 +49,7 @@ bot.on("message", function(message) {
     if(params[0] in modules.help) {
       message.channel.sendMessage("Welcome to Pokemiah\nNote: Commands and subs are completely optional\n"
        + "Usage: " + settings.prefix + "<module> <command> <sub> <name>\n"
-       + pluralCheck("Module", "", "s", modules) + "(default is \"" + settings['default-module'] + "\"): " + Object.keys(modules).join(", "));
+       + pluralCheck("Module", "", "s", modules) + "(default is \"" + settings["default-module"] + "\"): " + Object.keys(modules).join(", "));
     }
 
     // Module found
@@ -94,8 +94,8 @@ bot.on("message", function(message) {
 
     // Module not found, push rest of input into default module api call
     else {
-      if(settings['default-module'] in modules) {
-        modules[settings['default-module']].run(message, toApiCase(params.slice(0).join("-")));
+      if(settings["default-module"] in modules) {
+        modules[settings["default-module"]].run(message, toApiCase(params.slice(0).join("-")));
       }
       else {
         message.channel.sendMessage("No default module specified");

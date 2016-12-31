@@ -12,7 +12,7 @@ var commands = {
 		message.reply("Returns information on a pokemon\nNote: Not all commands use subs\nUsage: "
 		 + settings.prefix + "dex <command> <sub> <name>\n"
 		 + pluralCheck("Command", "", "s", commands) + " (default is \"info\"): "
-		 + Object.keys(commands).filter(function(r) {if(r !== 'run') {return r;}}).join(", "));
+		 + Object.keys(commands).filter(function(r) {if(r !== "run") {return r;}}).join(", "));
 	},
 
 	// Default command redirector
@@ -138,13 +138,7 @@ var commands = {
 			Promise.all(promises)
 			.then(function() {
         if(error) {
-          if('statusCode' in error && 'error' in error && 'detail' in error.error) {
-  					message.reply(error.statusCode + " - " + error.error.detail);
-  				}
-  				else {
-  					message.reply(error.name + " - " + error.message);
-  					console.log(error.name + " - " + error.message);
-  				}
+					displayError(message, error);
         }
         else {
           // Overwrite sprite url with local sprite path if exists
@@ -238,13 +232,7 @@ var commands = {
 			Promise.resolve(promise)
 			.then(function() {
         if(error) {
-          if('statusCode' in error && 'error' in error && 'detail' in error.error) {
-  					message.reply(error.statusCode + " - " + error.error.detail);
-  				}
-  				else {
-  					message.reply(error.name + " - " + error.message);
-  					console.log(error.name + " - " + error.message);
-  				}
+          displayError(message, error);
         }
         else {
           // Build details into a message
@@ -328,13 +316,7 @@ var commands = {
 			Promise.resolve(promise)
 			.then(function() {
 				if(error) {
-					if('statusCode' in error && 'error' in error && 'detail' in error.error) {
-						message.reply(error.statusCode + " - " + error.error.detail);
-					}
-					else {
-						message.reply(error.name + " - " + error.message);
-						console.log(error.name + " - " + error.message);
-					}
+					displayError(message, error);
 				}
 				else {
 					// Build details into a message
@@ -419,13 +401,7 @@ var commands = {
 			Promise.resolve(promise)
 			.then(function() {
         if(error) {
-          if('statusCode' in error && 'error' in error && 'detail' in error.error) {
-  					message.reply(error.statusCode + " - " + error.error.detail);
-  				}
-  				else {
-  					message.reply(error.name + " - " + error.message);
-  					console.log(error.name + " - " + error.message);
-  				}
+          displayError(message, error);
         }
         else {
 					replyList = [];
@@ -496,13 +472,7 @@ var commands = {
 			Promise.resolve(promise)
 			.then(function() {
         if(error) {
-          if('statusCode' in error && 'error' in error && 'detail' in error.error) {
-  					message.reply(error.statusCode + " - " + error.error.detail);
-  				}
-  				else {
-  					message.reply(error.name + " - " + error.message);
-  					console.log(error.name + " - " + error.message);
-  				}
+          displayError(message, error);
         }
         else {
           // Build details into a message
@@ -601,13 +571,7 @@ var commands = {
 			Promise.resolve(promise)
 			.then(function() {
         if(error) {
-          if('statusCode' in error && 'error' in error && 'detail' in error.error) {
-  					message.reply(error.statusCode + " - " + error.error.detail);
-  				}
-  				else {
-  					message.reply(error.name + " - " + error.message);
-  					console.log(error.name + " - " + error.message);
-  				}
+          displayError(message, error);
         }
         else {
 					var promises = [];
@@ -632,13 +596,7 @@ var commands = {
 					Promise.all(promises)
 					.then(function() {
 						if(error) {
-							if('statusCode' in error && 'error' in error && 'detail' in error.error) {
-								message.reply(error.statusCode + " - " + error.error.detail);
-							}
-							else {
-								message.reply(error.name + " - " + error.message);
-								console.log(error.name + " - " + error.message);
-							}
+							displayError(message, error);
 						}
 						else {
 							for(i in effectiveness) {
@@ -715,13 +673,7 @@ var commands = {
 			Promise.resolve(promise)
 			.then(function() {
         if(error) {
-          if('statusCode' in error && 'error' in error && 'detail' in error.error) {
-  					message.reply(error.statusCode + " - " + error.error.detail);
-  				}
-  				else {
-  					message.reply(error.name + " - " + error.message);
-  					console.log(error.name + " - " + error.message);
-  				}
+          displayError(message, error);
         }
         else {
           // Build details into a message
@@ -773,13 +725,7 @@ var commands = {
 			Promise.resolve(promise)
 			.then(function() {
         if(error) {
-          if('statusCode' in error && 'error' in error && 'detail' in error.error) {
-  					message.reply(error.statusCode + " - " + error.error.detail);
-  				}
-  				else {
-  					message.reply(error.name + " - " + error.message);
-  					console.log(error.name + " - " + error.message);
-  				}
+          displayError(message, error);
         }
         else {
           // Build details into a message
@@ -831,13 +777,7 @@ var commands = {
 			Promise.resolve(promise)
 			.then(function() {
         if(error) {
-          if('statusCode' in error && 'error' in error && 'detail' in error.error) {
-  					message.reply(error.statusCode + " - " + error.error.detail);
-  				}
-  				else {
-  					message.reply(error.name + " - " + error.message);
-  					console.log(error.name + " - " + error.message);
-  				}
+          displayError(message, error);
         }
         else {
           // Build details into a message
@@ -849,6 +789,27 @@ var commands = {
         console.log("Error in info Promise.resolve: " + e);
       });
 		}
+	}
+}
+
+// Shows a readable error chat
+function displayError(message, error) {
+	if("statusCode" in error && "error" in error && "detail" in error.error && "options" in error && "url" in error.options) {
+		message.reply("\"" + getLastPart(error.options.url) + "\" " + error.statusCode + " - " + error.error.detail);
+	}
+	else if("message" in error) {
+		message.reply(error.message);
+		console.log(error.message);
+	}
+	else {
+		fs.appendFile("uknown_error.txt", JSON.stringify(error, null, 2), function(e) {
+			if(e) {
+				console.log("Error writing unknown_error.txt: " + e);
+			}
+			else {
+				console.log("Successfully wrote to unknown_error.txt");
+			}
+		});
 	}
 }
 
