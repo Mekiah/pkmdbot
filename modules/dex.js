@@ -28,11 +28,7 @@ var commands = {
 		},
 
 		run: function(message, name) {
-      console.log("Serving \"" + settings.prefix + "dex info " + name + "\" to \""
-      + message.author.username + "#" + message.author.discriminator +"\"");
-			// Skips api check if dex # out of range
-			if(parseInt(name) > settings.count) {
-				message.reply("404 - Not found.");
+			if(initCommand(message, name, "dex", "info")) {
 				return;
 			}
 
@@ -195,11 +191,7 @@ var commands = {
 			if(command === undefined) {
 				command = "all";
 			}
-			console.log("Serving \"" + settings.prefix + "dex stats " + command + " " + name + "\" to \""
-      + message.author.username + "#" + message.author.discriminator +"\"");
-			// Skips api check if dex # out of range
-			if(parseInt(name) > settings.count) {
-				message.reply("404 - Not found.");
+			if(initCommand(message, name, "dex", "stats", command)) {
 				return;
 			}
 
@@ -279,11 +271,7 @@ var commands = {
 			if(command === undefined) {
 				command = "all";
 			}
-			console.log("Serving \"" + settings.prefix + "dex evs " + command + " " + name + "\" to \""
-			+ message.author.username + "#" + message.author.discriminator +"\"");
-			// Skips api check if dex # out of range
-			if(parseInt(name) > settings.count) {
-				message.reply("404 - Not found.");
+			if(initCommand(message, name, "dex", "evs", command)) {
 				return;
 			}
 
@@ -360,11 +348,7 @@ var commands = {
 			if(command === undefined) {
 				command = "level-up";
 			}
-			console.log("Serving \"" + settings.prefix + "dex moves " + command + " " + name + "\" to \""
-      + message.author.username + "#" + message.author.discriminator +"\"");
-			// Skips api check if dex # out of range
-			if(parseInt(name) > settings.count) {
-				message.reply("404 - Not found.");
+			if(initCommand(message, name, "dex", "moves", command)) {
 				return;
 			}
 
@@ -435,11 +419,7 @@ var commands = {
 		},
 
 		run: function(message, name) {
-      console.log("Serving \"" + settings.prefix + "dex type " + name + "\" to \""
-      + message.author.username + "#" + message.author.discriminator +"\"");
-			// Skips api check if dex # out of range
-			if(parseInt(name) > settings.count) {
-				message.reply("404 - Not found.");
+			if(initCommand(message, name, "dex", "type")) {
 				return;
 			}
 
@@ -506,11 +486,7 @@ var commands = {
 			if(command === undefined) {
 				command = "all";
 			}
-      console.log("Serving \"" + settings.prefix + "dex effect " + name + "\" to \""
-      + message.author.username + "#" + message.author.discriminator +"\"");
-			// Skips api check if dex # out of range
-			if(parseInt(name) > settings.count) {
-				message.reply("404 - Not found.");
+			if(initCommand(message, name, "dex", "effect", command)) {
 				return;
 			}
 
@@ -636,11 +612,7 @@ var commands = {
 		},
 
 		run: function(message, name) {
-      console.log("Serving \"" + settings.prefix + "dex ability " + name + "\" to \""
-      + message.author.username + "#" + message.author.discriminator +"\"");
-			// Skips api check if dex # out of range
-			if(parseInt(name) > settings.count) {
-				message.reply("404 - Not found.");
+			if(initCommand(message, name, "dex", "ability")) {
 				return;
 			}
 
@@ -662,6 +634,9 @@ var commands = {
 				abilityList = [];
 				for(i in abilities) {
 					abilityList.push(convertName(abilities[i].ability.name, "ability"));
+					if(abilities[i].is_hidden) {
+            abilityList[i] = "**" + abilityList[i] + "**";
+          }
 				}
 
   			details.abilities = abilityList;
@@ -695,11 +670,7 @@ var commands = {
 		},
 
 		run: function(message, name) {
-      console.log("Serving \"" + settings.prefix + "dex height " + name + "\" to \""
-      + message.author.username + "#" + message.author.discriminator +"\"");
-			// Skips api check if dex # out of range
-			if(parseInt(name) > settings.count) {
-				message.reply("404 - Not found.");
+			if(initCommand(message, name, "dex", "height")) {
 				return;
 			}
 
@@ -747,11 +718,7 @@ var commands = {
 		},
 
 		run: function(message, name) {
-      console.log("Serving \"" + settings.prefix + "dex weight " + name + "\" to \""
-      + message.author.username + "#" + message.author.discriminator +"\"");
-			// Skips api check if dex # out of range
-			if(parseInt(name) > settings.count) {
-				message.reply("404 - Not found.");
+			if(initCommand(message, name, "dex", "weight")) {
 				return;
 			}
 
@@ -792,10 +759,27 @@ var commands = {
 	}
 }
 
+// Do predefined actions before each command
+function initCommand(message, name, mod, command, sub) {
+	if(sub) {
+		sub += " ";
+	}
+	else {
+		sub = "";
+	}
+	console.log("Serving \"" + settings.prefix + mod + " " + command + " " + sub + name + "\" to \""
+	+ message.author.username + "#" + message.author.discriminator +"\"");
+	// Skips api check if dex # out of range
+	if(parseInt(name) > settings.count) {
+		message.reply("404 - {\"detail\":\"Not found.\"}".replace("detail", name));
+		return true;
+	}
+}
+
 // Shows a readable error chat
 function displayError(message, error) {
 	if("statusCode" in error && "error" in error && "detail" in error.error && "options" in error && "url" in error.options) {
-		message.reply("\"" + getLastPart(error.options.url) + "\" " + error.statusCode + " - " + error.error.detail);
+		message.reply(error.message.replace("detail", getLastPart(error.options.url)));
 	}
 	else if("message" in error) {
 		message.reply(error.message);

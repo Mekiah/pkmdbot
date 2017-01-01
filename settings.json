@@ -5,7 +5,8 @@
   "versions": "omega-ruby-alpha-sapphire",
   "count": 721,
   "modules": {
-    "dex": true
+    "dex": true,
+    "move": true
   },
   "default-module": "dex",
   "help": {
