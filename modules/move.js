@@ -82,12 +82,15 @@ var commands = {
 						stats.push("Power: " + details.power);
 					}
 					if(details.accuracy !== null) {
-						stats.push("Accuracy: " + details.accuracy);
+						stats.push("Accuracy: " + details.accuracy + "%");
 					}
 					if(details.pp !== 1) {
 						stats.push("PP: " + details.pp);
 					}
 					if(details.priority !== 0) {
+						if(details.priority > 0) {
+							details.priority = "+" + details.priority;
+						}
 						stats.push("Priority: " + details.priority);
 					}
 					reply = reply + "\n" + stats.join(" - ");
