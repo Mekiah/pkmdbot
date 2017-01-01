@@ -147,10 +147,9 @@ var commands = {
 
           // Build details into a message
           reply = details.name + " #" + details.number + details.title
-          + "\nHeight: " + details.height
-          + "\nWeight: " + details.weight
           + "\n" + pluralCheck("Type", "", "s", typeList) + ": " + typeList.join(" | ")
           + "\n" + pluralCheck("Abilit", "y", "ies", abilityList) + ": " + abilityList.join(", ")
+          + "\nHeight: " + details.height + " - Weight: " + details.weight
           //+ "\n" + details.flavor
           ;
 
