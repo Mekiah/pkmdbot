@@ -367,7 +367,7 @@ var commands = {
 				// Iterates through moves and version specifics, if settings version and sub match up, add to push to list in object at level acquired
 				for(i in r.moves) {
 					for(j in r.moves[i].version_group_details) {
-						if(settings.versions === r.moves[i].version_group_details[j].version_group.name
+						if(settings["version-group"] === r.moves[i].version_group_details[j].version_group.name
 							 && command === r.moves[i].version_group_details[j].move_learn_method.name) {
 								 if(movesList[r.moves[i].version_group_details[j].level_learned_at] === undefined) {
 									 movesList[r.moves[i].version_group_details[j].level_learned_at] = [];

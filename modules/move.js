@@ -6,7 +6,7 @@ var convert = require("../convert.json");
 var pkm = new Pokedex(settings.pokedex);
 
 var commands = {
-	// Returns what !dex does, usage, and list of commands e.g. type, moves, effectiveness
+	// Returns what !move does, usage, and list of commands e.g. type, moves, effectiveness
 	help: function(message) {
 		message.reply("Returns information on a move\nNote: Not all commands use subs\nUsage: "
 		 + settings.prefix + "move <command> <sub> <name>\n"
@@ -19,7 +19,7 @@ var commands = {
 		commands.info.run(message, name);
 	},
 
-	// Returns the basic details of a pokemon
+	// Returns the basic details of a move
 	info: {
 		help: function(message) {
 			message.reply("Returns the basic details of a move\nUsage: "

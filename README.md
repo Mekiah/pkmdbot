@@ -18,9 +18,9 @@ $ npm install
 To configure the bot edit settings.json:
 * prefix: What character a message must begin with to interact with the bot
 * owner: Full username of the person in control of the bot (not the bot's username)
-* version: Current game version supported by pokeapi
-* versions: Current game versions supported by pokeapi
-* count: Current amount of pokemon species supported by pokeapi
+* version: Current game version supported by pokeapi ("See http://pokeapi.co/api/v2/version".results names)
+* version-group: Current game version group supported by pokeapi ("See http://pokeapi.co/api/v2/version-group/".results names)
+* count: Current amount of pokemon species supported by pokeapi ("See http://pokeapi.co/api/v2/pokemon-species/".count)
 * modules: Modules to load on bot start up, boolean determines if it is loaded
 * default-module: Module to use when no matching module found in message
 * help: Commands that will invoke base help command

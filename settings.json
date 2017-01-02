@@ -2,11 +2,12 @@
   "prefix": "!",
   "owner": "Mekiah#1942",
   "version": "omega-ruby",
-  "versions": "omega-ruby-alpha-sapphire",
+  "version-group": "omega-ruby-alpha-sapphire",
   "count": 721,
   "modules": {
     "dex": true,
-    "move": true
+    "move": true,
+    "ability": true
   },
   "default-module": "dex",
   "help": {
