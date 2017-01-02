@@ -47,6 +47,7 @@ bot.on("message", function(message) {
     /* Sends input to the correct module */
     // Bot help
     if(params[0] in modules.help) {
+      console.log("Serving " + settings.prefix + "help to "	+ message.author.username + "#" + message.author.discriminator);
       message.channel.sendMessage("Welcome to Pokemiah\nNote: Commands and subs are completely optional\n"
        + "Usage: " + settings.prefix + "<module> <command> <sub> <name>\n"
        + pluralCheck("Module", "", "s", modules) + "(default is \"" + settings["default-module"] + "\"): " + Object.keys(modules).join(", "));
