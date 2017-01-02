@@ -8,7 +8,7 @@ var pkm = new Pokedex(settings.pokedex);
 var commands = {
 	// Returns what !move does, usage, and list of commands e.g. type, moves, effectiveness
 	help: function(message) {
-		initCommand(message, "help", "move", "info");
+		initCommand(message, "help", "move");
 		message.reply("Returns information on a move\nNote: Not all commands use subs\nUsage: "
 		 + settings.prefix + "move <command> <sub> <name>\n"
 		 + pluralCheck("Command", "", "s", commands) + " (default is \"info\"): "
