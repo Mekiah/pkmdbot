@@ -8,6 +8,7 @@ var pkm = new Pokedex(settings.pokedex);
 var commands = {
 	// Returns what !ability does, usage, and list of commands
 	help: function(message) {
+		initCommand(message, "help", "ability");
 		message.reply("Returns information on an ability\nNote: Not all commands use subs\nUsage: "
 		 + settings.prefix + "move <command> <sub> <name>\n"
 		 + pluralCheck("Command", "", "s", commands) + " (default is \"info\"): "
@@ -22,6 +23,7 @@ var commands = {
 	// Returns the basic details of an ability
 	info: {
 		help: function(message) {
+			initCommand(message, "help", "ability", "info");
 			message.reply("Returns the basic details of an ability\nUsage: "
 			 + settings.prefix + "ability info <name>\n");
 		},
@@ -77,14 +79,18 @@ var commands = {
 
 // Do predefined actions before each command
 function initCommand(message, name, mod, command, sub) {
-	if(sub) {
-		sub += " ";
+	var args = [name, mod, command, sub];
+	for(i in args)
+	{
+		if(args[i]) {
+			args[i] = args[i] + " ";
+		}
+		else {
+			args[i] = "";
+		}
 	}
-	else {
-		sub = "";
-	}
-	console.log("Serving \"" + settings.prefix + mod + " " + command + " " + sub + name + "\" to \""
-	+ message.author.username + "#" + message.author.discriminator +"\"");
+	console.log("Serving " + settings.prefix + args[1] + args[2] + args[3] + args[0] + "to "
+	+ message.author.username + "#" + message.author.discriminator);
 	// Skips api check if dex # out of range
 	if(parseInt(name)) {
 		message.reply("404 - {\"detail\":\"Not found.\"}".replace("detail"	, name));

@@ -9,6 +9,7 @@ var pkm = new Pokedex(settings.pokedex);
 var commands = {
 	// Returns what !dex does, usage, and list of commands e.g. type, moves, effectiveness
 	help: function(message) {
+		initCommand(message, "help", "dex");
 		message.reply("Returns information on a pokemon\nNote: Not all commands use subs\nUsage: "
 		 + settings.prefix + "dex <command> <sub> <name>\n"
 		 + pluralCheck("Command", "", "s", commands) + " (default is \"info\"): "
@@ -23,6 +24,7 @@ var commands = {
 	// Returns the basic details of a pokemon
 	info: {
 		help: function(message) {
+			initCommand(message, "help", "dex", "info");
 			message.reply("Returns the basic details of a pokemon\nUsage: "
 			 + settings.prefix + "dex info <name>\n");
 		},
@@ -171,6 +173,7 @@ var commands = {
 	// Returns the base stats of a pokemon
 	stats: {
 		help: function(message) {
+			initCommand(message, "help", "dex", "stats");
 			message.reply("Returns the base stats of a pokemon\nUsage: "
 			 + settings.prefix + "dex stats <sub> <name>\n"
 			 + pluralCheck("Sub", "", "s", commands.stats.sub) + " (default is \"all\"): " + Object.keys(commands.stats.sub).join(", "));
@@ -251,6 +254,7 @@ var commands = {
 	// Returns the ev yield of a pokemon
 	evs: {
 		help: function(message) {
+			initCommand(message, "help", "dex", "evs");
 			message.reply("Returns the ev yield of a pokemon\nUsage: "
 			 + settings.prefix + "dex evs <sub> <name>\n"
 			 + pluralCheck("Sub", "", "s", commands.evs.sub) + " (default is \"all\"): " + Object.keys(commands.evs.sub).join(", "));
@@ -331,6 +335,7 @@ var commands = {
 	// Returns the moves of a pokemon
 	moves: {
 		help: function(message) {
+			initCommand(message, "help", "dex", "moves");
 			message.reply("Returns the moves of a pokemon\nUsage: "
 			 + settings.prefix + "dex moves <sub> <name>\n"
 			 + pluralCheck("Sub", "", "s", commands.moves.sub) + " (default is \"learn\"): " + Object.keys(commands.moves.sub).join(", "));
@@ -413,6 +418,7 @@ var commands = {
 	// Returns the type of a pokemon
 	type: {
 		help: function(message) {
+			initCommand(message, "help", "dex", "type");
 			message.reply("Returns the type of a pokemon\nUsage: "
 			 + settings.prefix + "dex type <name>\n");
 		},
@@ -468,6 +474,7 @@ var commands = {
 	// Returns the type effectiveness of a pokemon
 	effect: {
 		help: function(message) {
+			initCommand(message, "help", "dex", "effects");
 			message.reply("Returns the type effectiveness of a pokemon\nUsage: "
 			 + settings.prefix + "dex effect <sub> <name>\n"
 			 + pluralCheck("Sub", "", "s", commands.effect.sub) + " (default is \"all\"): " + Object.keys(commands.effect.sub).join(", "));
@@ -606,6 +613,7 @@ var commands = {
 	// Returns the ability of a pokemon
 	ability: {
 		help: function(message) {
+			initCommand(message, "help", "dex", "ability");
 			message.reply("Returns the ability of a pokemon\nUsage: "
 			 + settings.prefix + "dex ability <name>\n");
 		},
@@ -664,6 +672,7 @@ var commands = {
 	// Returns the height of a pokemon
 	height: {
 		help: function(message) {
+			initCommand(message, "help", "dex", "height");
 			message.reply("Returns the height of a pokemon\nUsage: "
 			 + settings.prefix + "dex height <name>\n");
 		},
@@ -712,6 +721,7 @@ var commands = {
 	// Returns the weight of a pokemon
 	weight: {
 		help: function(message) {
+			initCommand(message, "help", "dex", "weight");
 			message.reply("Returns the weight of a pokemon\nUsage: "
 			 + settings.prefix + "dex weight <name>\n");
 		},
@@ -760,14 +770,18 @@ var commands = {
 
 // Do predefined actions before each command
 function initCommand(message, name, mod, command, sub) {
-	if(sub) {
-		sub += " ";
+	var args = [name, mod, command, sub];
+	for(i in args)
+	{
+		if(args[i]) {
+			args[i] = args[i] + " ";
+		}
+		else {
+			args[i] = "";
+		}
 	}
-	else {
-		sub = "";
-	}
-	console.log("Serving \"" + settings.prefix + mod + " " + command + " " + sub + name + "\" to \""
-	+ message.author.username + "#" + message.author.discriminator +"\"");
+	console.log("Serving " + settings.prefix + args[1] + args[2] + args[3] + args[0] + "to "
+	+ message.author.username + "#" + message.author.discriminator);
 	// Skips api check if dex # out of range
 	if(parseInt(name) > settings.count) {
 		message.reply("404 - {\"detail\":\"Not found.\"}".replace("detail", name));
