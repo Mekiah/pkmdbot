@@ -1,9 +1,6 @@
 # pokemiah
 A Node.js Discord bot for retrieving pokemon information. Copyright © 2016, [Mekiah](https://github.com/Mekiah). All rights reserved.
 
-## On License:
-I plan to add a GNU license in the future, but I want the bot to have most of the features I have planned before doing so.
-
 ## Setup:
 To set up the bot to a functioning state:
 * Download and install [Node.js](https://nodejs.org/)
