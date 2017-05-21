@@ -109,29 +109,21 @@ var commands = {
 
 // Do predefined actions before each command
 function initCommand(message, name, mod, command, sub) {
-	var args = [name, mod, command, sub];
-	for(i in args)
-	{
-		if(args[i]) {
-			args[i] = args[i] + " ";
-		}
-		else {
-			args[i] = "";
-		}
-	}
-	console.log("Serving " + settings.prefix + args[1] + args[2] + args[3] + args[0] + "to "
+	var args = [name, mod, command, sub].filter(function(r) {if(r) {return r;}}).join(" ");
+
+	console.log("Serving " + settings.prefix + args + " to "
 	+ message.author.username + "#" + message.author.discriminator);
-	// Skips api check if dex # out of range
+	// Skips api check if an integer
 	if(parseInt(name)) {
 		message.reply("404 - {\"detail\":\"Not found.\"}".replace("detail"	, name));
-		return 1;
+		return true;
 	}
 }
 
 // Shows a readable error chat
 function displayError(message, error) {
-	if("statusCode" in error && "error" in error && "detail" in error.error && "options" in error && "url" in error.options) {
-		message.reply(error.message.replace("detail", getLastPart(error.options.url)));
+	if(error.statusCode === 404 && "options" in error && "url" in error.options) {
+		message.reply("404: " + getLastPart(error.options.url) + " not found.");
 	}
 	else if("message" in error) {
 		message.reply(error.message);
@@ -144,6 +136,7 @@ function displayError(message, error) {
 			}
 			else {
 				console.log("Successfully wrote to unknown_error.txt");
+				message.reply("Unknown error encountered. Check logs for details.");
 			}
 		});
 	}
