@@ -36,7 +36,7 @@ bot.on("ready", function() {
 // Command syntax goes as follows[e.g.]: module[dex], command[moves], subcommand[tm], item[nidoking]
 bot.on("message", function(message) {
   if(message.author !== bot.user && message.content.startsWith(settings.prefix)) {
-    var args = message.content.substring(1).split(" ").filter(function(r) {if(r !== "") {return r;}});
+    var args = message.content.substring(1).split(" ").filter(function(r){if(r !== ""){return r;}});
 
     // Owner kill switch
     if(args[0] === "die") {

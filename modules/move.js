@@ -12,7 +12,7 @@ var commands = {
 		message.reply("Returns information on a move\nNote: Not all commands use subs\nUsage: "
 		 + settings.prefix + "move <command> <sub> <name>\n"
 		 + pluralCheck("Command", "", "s", commands) + " (default is \"info\"): "
-		 + Object.keys(commands).filter(function(r) {if(r !== "run") {return r;}}).join(", "));
+		 + Object.keys(commands).filter(function(r){if(r !== "run"){return r;}}).join(", "));
 	},
 
 	// Default command redirector
@@ -109,7 +109,7 @@ var commands = {
 
 // Do predefined actions before each command
 function initCommand(message, name, mod, command, sub) {
-	var args = [name, mod, command, sub].filter(function(r) {if(r) {return r;}}).join(" ");
+	var args = [name, mod, command, sub].filter(function(r){if(r){return r;}}).join(" ");
 
 	console.log("Serving " + settings.prefix + args + " to "
 	+ message.author.username + "#" + message.author.discriminator);
@@ -153,12 +153,12 @@ function firstUpper(string) {
 
 // Gets last piece of a url
 function getLastPart(url) {
-	return url.split("/").filter(function(r) { if(r !== "") {return r;} }).slice(-1)[0];
+	return url.split("/").filter(function(r){if(r !== ""){return r;}}).slice(-1)[0];
 }
 
 // Returns string concating o with s if list has 1 item or p is list has >1 items
 function pluralCheck(o, s, p, list) {
-  if(Object.keys(list).filter(function(r) { if(r !== "run") { return r; } }).length > 1) {
+  if(Object.keys(list).filter(function(r){if(r !== "run"){return r;}}).length > 1) {
     return o + p;
   }
   else {
