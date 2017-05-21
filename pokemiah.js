@@ -6,9 +6,9 @@ if(fs.existsSync("./.env")) {
   require("dotenv").config();
 }
 else {
-  closeBot("No \".env\" file found")
+  closeBot("No \".env\" file found");
 }
-var Promise = require("promise");
+var promise = require("promise");
 var discord = require("discord.js");
 var settings = require("./settings.json");
 var convert = require("./convert.json").read2form;
@@ -36,7 +36,9 @@ bot.on("ready", function() {
 // Command syntax goes as follows[e.g.]: module[dex], command[moves], subcommand[tm], item[nidoking]
 bot.on("message", function(message) {
   if(message.author !== bot.user && message.content.startsWith(settings.prefix)) {
-    var args = message.content.substring(1).split(" ");
+        console.log(args);
+    var args = message.content.substring(1).split(" ").filter(function(r) {if(r !== "") {return r;}});
+    console.log(args);
 
     // Owner kill switch
     if(args[0] === "die" && message.author.username + "#" + message.author.discriminator === settings.owner) {
@@ -148,7 +150,7 @@ function closeBot(code, logoff) {
 
 // Login with token
 var login = bot.login(process.env.DISCORD_TOKEN);
-Promise.resolve(login)
+promise.resolve(login)
 .catch(function(e) {
   closeBot("Token is incorrect", false);
 });
