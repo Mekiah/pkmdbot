@@ -1,18 +1,18 @@
 var fs = require("fs");
 var Promise = require("promise");
 var Pokedex = require("pokedex-promise-v2");
+var shared = require("../shared.js");
 var settings = require("../settings.json");
-var convert = require("../convert.json");
 
 var pkm = new Pokedex(settings.pokedex);
 
 var commands = {
 	// Returns what !dex does, usage, and list of commands e.g. type, moves, effectiveness
 	help: function(message) {
-		initCommand(message, "help", "dex");
+		shared.initCommand(message, "help", "dex", settings.count);
 		message.reply("Returns information on a pokemon\nNote: Not all commands use subs\nUsage: "
 		 + settings.prefix + "dex <command> <sub> <name>\n"
-		 + pluralCheck("Command", "", "s", commands) + " (default is \"info\"): "
+		 + shared.pluralCheck("Command", "", "s", commands) + " (default is \"info\"): "
 		 + Object.keys(commands).filter(function(r){if(r !== "run"){return r;}}).join(", "));
 	},
 
@@ -24,13 +24,13 @@ var commands = {
 	// Returns the basic details of a pokemon
 	info: {
 		help: function(message) {
-			initCommand(message, "help", "dex", "info");
+			shared.initCommand(message, "help", "dex", "info", settings.count);
 			message.reply("Returns the basic details of a pokemon\nUsage: "
 			 + settings.prefix + "dex info <name>\n");
 		},
 
 		run: function(message, name) {
-			if(initCommand(message, name, "dex", "info")) {
+			if(shared.initCommand(message, name, "dex", "info", settings.count)) {
 				return;
 			}
 
@@ -53,8 +53,8 @@ var commands = {
 			var promises = [];
 
       // Get api names using convert.json
-			details.pokemonname = convertName(details.formname, "form2name");
-			details.speciesname = convertName(details.formname, "form2species");
+			details.pokemonname = shared.convertName(details.formname, "form2name");
+			details.speciesname = shared.convertName(details.formname, "form2species");
 
 			promises.push(pkm.getPokemonSpeciesByName(details.speciesname)
 			.then(function(r) {
@@ -107,17 +107,17 @@ var commands = {
 			.then(function(r) {
 				details.pokemonname = r.name;
         // Save types to list
-				types = slotSort(r.types);
+				types = shared.slotSort(r.types);
 				typeList = [];
 				for(i in types) {
-					typeList.push(convertName(types[i].type.name, "type"));
+					typeList.push(shared.convertName(types[i].type.name, "type"));
 				}
 
         // Save abilities to list with hidden check
-				abilities = slotSort(r.abilities);
+				abilities = shared.slotSort(r.abilities);
 				abilityList = [];
 				for(i in abilities) {
-					abilityList.push(convertName(abilities[i].ability.name, "ability"));
+					abilityList.push(shared.convertName(abilities[i].ability.name, "ability"));
           if(abilities[i].is_hidden) {
             abilityList[i] = "**" + abilityList[i] + "**";
           }
@@ -136,7 +136,7 @@ var commands = {
 			Promise.all(promises)
 			.then(function() {
         if(error) {
-					displayError(message, error);
+					shared.displayError(message, error);
         }
         else {
           // Overwrite sprite url with local sprite path if exists
@@ -149,8 +149,8 @@ var commands = {
 
           // Build details into a message
           reply = details.name + " #" + details.number + details.title
-          + "\n" + pluralCheck("Type", "", "s", typeList) + ": " + typeList.join(" | ")
-          + "\n" + pluralCheck("Abilit", "y", "ies", abilityList) + ": " + abilityList.join(", ")
+          + "\n" + shared.pluralCheck("Type", "", "s", typeList) + ": " + typeList.join(" | ")
+          + "\n" + shared.pluralCheck("Abilit", "y", "ies", abilityList) + ": " + abilityList.join(", ")
           + "\nHeight: " + details.height + " - Weight: " + details.weight
           //+ "\n" + details.flavor
           ;
@@ -173,10 +173,10 @@ var commands = {
 	// Returns the base stats of a pokemon
 	stats: {
 		help: function(message) {
-			initCommand(message, "help", "dex", "stats");
+			shared.initCommand(message, "help", "dex", "stats", settings.count);
 			message.reply("Returns the base stats of a pokemon\nUsage: "
 			 + settings.prefix + "dex stats <sub> <name>\n"
-			 + pluralCheck("Sub", "", "s", commands.stats.sub) + " (default is \"all\"): " + Object.keys(commands.stats.sub).join(", "));
+			 + shared.pluralCheck("Sub", "", "s", commands.stats.sub) + " (default is \"all\"): " + Object.keys(commands.stats.sub).join(", "));
 		},
 
 		sub: {
@@ -193,7 +193,7 @@ var commands = {
 			if(command === undefined) {
 				command = "all";
 			}
-			if(initCommand(message, name, "dex", "stats", command)) {
+			if(shared.initCommand(message, name, "dex", "stats", settings.count, command)) {
 				return;
 			}
 
@@ -211,7 +211,7 @@ var commands = {
 			}
 
 			// Get api names using convert.json
-			details.pokemonname = convertName(details.formname, "form2name");
+			details.pokemonname = shared.convertName(details.formname, "form2name");
 
 			var promise = pkm.getPokemonByName(details.pokemonname)
 			.then(function(r) {
@@ -226,7 +226,7 @@ var commands = {
 			Promise.resolve(promise)
 			.then(function() {
         if(error) {
-          displayError(message, error);
+          shared.displayError(message, error);
         }
         else {
           // Build details into a message
@@ -254,10 +254,10 @@ var commands = {
 	// Returns the ev yield of a pokemon
 	evs: {
 		help: function(message) {
-			initCommand(message, "help", "dex", "evs");
+			shared.initCommand(message, "help", "dex", "evs", settings.count);
 			message.reply("Returns the ev yield of a pokemon\nUsage: "
 			 + settings.prefix + "dex evs <sub> <name>\n"
-			 + pluralCheck("Sub", "", "s", commands.evs.sub) + " (default is \"all\"): " + Object.keys(commands.evs.sub).join(", "));
+			 + shared.pluralCheck("Sub", "", "s", commands.evs.sub) + " (default is \"all\"): " + Object.keys(commands.evs.sub).join(", "));
 		},
 
 		sub: {
@@ -274,7 +274,7 @@ var commands = {
 			if(command === undefined) {
 				command = "all";
 			}
-			if(initCommand(message, name, "dex", "evs", command)) {
+			if(shared.initCommand(message, name, "dex", "evs", settings.count, command)) {
 				return;
 			}
 
@@ -292,7 +292,7 @@ var commands = {
 			}
 
 			// Get api names using convert.json
-			details.pokemonname = convertName(details.formname, "form2name");
+			details.pokemonname = shared.convertName(details.formname, "form2name");
 
 			var promise = pkm.getPokemonByName(details.pokemonname)
 			.then(function(r) {
@@ -307,7 +307,7 @@ var commands = {
 			Promise.resolve(promise)
 			.then(function() {
 				if(error) {
-					displayError(message, error);
+					shared.displayError(message, error);
 				}
 				else {
 					// Build details into a message
@@ -335,10 +335,10 @@ var commands = {
 	// Returns the moves of a pokemon
 	moves: {
 		help: function(message) {
-			initCommand(message, "help", "dex", "moves");
+			shared.initCommand(message, "help", "dex", "moves", settings.count);
 			message.reply("Returns the moves of a pokemon\nUsage: "
 			 + settings.prefix + "dex moves <sub> <name>\n"
-			 + pluralCheck("Sub", "", "s", commands.moves.sub) + " (default is \"learn\"): " + Object.keys(commands.moves.sub).join(", "));
+			 + shared.pluralCheck("Sub", "", "s", commands.moves.sub) + " (default is \"learn\"): " + Object.keys(commands.moves.sub).join(", "));
 		},
 
 		sub: {
@@ -352,7 +352,7 @@ var commands = {
 			if(command === undefined) {
 				command = "level-up";
 			}
-			if(initCommand(message, name, "dex", "moves", command)) {
+			if(shared.initCommand(message, name, "dex", "moves", settings.count, command)) {
 				return;
 			}
 
@@ -365,7 +365,7 @@ var commands = {
 			var movesList = {}
 
 			// Get api names using convert.json
-			details.pokemonname = convertName(details.formname, "form2name");
+			details.pokemonname = shared.convertName(details.formname, "form2name");
 
 			var promise = pkm.getPokemonByName(details.pokemonname)
 			.then(function(r) {
@@ -377,7 +377,7 @@ var commands = {
 								 if(movesList[r.moves[i].version_group_details[j].level_learned_at] === undefined) {
 									 movesList[r.moves[i].version_group_details[j].level_learned_at] = [];
 								 }
-								 movesList[r.moves[i].version_group_details[j].level_learned_at].push(convertName(r.moves[i].move.name, "move"));
+								 movesList[r.moves[i].version_group_details[j].level_learned_at].push(shared.convertName(r.moves[i].move.name, "move"));
 							 }
 					}
 				}
@@ -389,7 +389,7 @@ var commands = {
 			Promise.resolve(promise)
 			.then(function() {
         if(error) {
-          displayError(message, error);
+          shared.displayError(message, error);
         }
         else {
 					replyList = [];
@@ -418,13 +418,13 @@ var commands = {
 	// Returns the type of a pokemon
 	type: {
 		help: function(message) {
-			initCommand(message, "help", "dex", "type");
+			shared.initCommand(message, "help", "dex", "type", settings.count);
 			message.reply("Returns the type of a pokemon\nUsage: "
 			 + settings.prefix + "dex type <name>\n");
 		},
 
 		run: function(message, name) {
-			if(initCommand(message, name, "dex", "type")) {
+			if(shared.initCommand(message, name, "dex", "type", settings.count)) {
 				return;
 			}
 
@@ -437,15 +437,15 @@ var commands = {
 			}
 
       // Get api names using convert.json
-			details.pokemonname = convertName(details.formname, "form2name");
+			details.pokemonname = shared.convertName(details.formname, "form2name");
 
 			var promise = pkm.getPokemonByName(details.pokemonname)
 			.then(function(r) {
         // Save types to list
-				types = slotSort(r.types);
+				types = shared.slotSort(r.types);
 				typeList = [];
 				for(i in types) {
-					typeList.push(convertName(types[i].type.name, "type"));
+					typeList.push(shared.convertName(types[i].type.name, "type"));
 				}
 
   			details.types = typeList;
@@ -457,7 +457,7 @@ var commands = {
 			Promise.resolve(promise)
 			.then(function() {
         if(error) {
-          displayError(message, error);
+          shared.displayError(message, error);
         }
         else {
           // Build details into a message
@@ -474,10 +474,10 @@ var commands = {
 	// Returns the type effectiveness of a pokemon
 	effect: {
 		help: function(message) {
-			initCommand(message, "help", "dex", "effects");
+			shared.initCommand(message, "help", "dex", "effects", settings.count);
 			message.reply("Returns the type effectiveness of a pokemon\nUsage: "
 			 + settings.prefix + "dex effect <sub> <name>\n"
-			 + pluralCheck("Sub", "", "s", commands.effect.sub) + " (default is \"all\"): " + Object.keys(commands.effect.sub).join(", "));
+			 + shared.pluralCheck("Sub", "", "s", commands.effect.sub) + " (default is \"all\"): " + Object.keys(commands.effect.sub).join(", "));
 		},
 
 		sub: {
@@ -492,7 +492,7 @@ var commands = {
 			if(command === undefined) {
 				command = "all";
 			}
-			if(initCommand(message, name, "dex", "effect", command)) {
+			if(shared.initCommand(message, name, "dex", "effect", settings.count, command)) {
 				return;
 			}
 
@@ -533,12 +533,12 @@ var commands = {
 			}
 
       // Get api names using convert.json
-			details.pokemonname = convertName(details.formname, "form2name");
+			details.pokemonname = shared.convertName(details.formname, "form2name");
 
 			var promise = pkm.getPokemonByName(details.pokemonname)
 			.then(function(r) {
         // Save types to list
-				types = slotSort(r.types);
+				types = shared.slotSort(r.types);
 				typeList = [];
 				for(i in types) {
 					typeList.push(types[i].type.name);
@@ -553,7 +553,7 @@ var commands = {
 			Promise.resolve(promise)
 			.then(function() {
         if(error) {
-          displayError(message, error);
+          shared.displayError(message, error);
         }
         else {
 					var promises = [];
@@ -578,11 +578,11 @@ var commands = {
 					Promise.all(promises)
 					.then(function() {
 						if(error) {
-							displayError(message, error);
+							shared.displayError(message, error);
 						}
 						else {
 							for(i in effectiveness) {
-								multiplier[effectiveness[i]].push(convertName(i, "type"));
+								multiplier[effectiveness[i]].push(shared.convertName(i, "type"));
 							}
 							var replyList = {}
 							for(i in multiplier)
@@ -613,13 +613,13 @@ var commands = {
 	// Returns the ability of a pokemon
 	ability: {
 		help: function(message) {
-			initCommand(message, "help", "dex", "ability");
+			shared.initCommand(message, "help", "dex", "ability", settings.count);
 			message.reply("Returns the ability of a pokemon\nUsage: "
 			 + settings.prefix + "dex ability <name>\n");
 		},
 
 		run: function(message, name) {
-			if(initCommand(message, name, "dex", "ability")) {
+			if(shared.initCommand(message, name, "dex", "ability", settings.count)) {
 				return;
 			}
 
@@ -632,15 +632,15 @@ var commands = {
 			}
 
       // Get api names using convert.json
-			details.pokemonname = convertName(details.formname, "form2name");
+			details.pokemonname = shared.convertName(details.formname, "form2name");
 
 			var promise = pkm.getPokemonByName(details.pokemonname)
 			.then(function(r) {
         // Save abilities to list
-				abilities = slotSort(r.abilities);
+				abilities = shared.slotSort(r.abilities);
 				abilityList = [];
 				for(i in abilities) {
-					abilityList.push(convertName(abilities[i].ability.name, "ability"));
+					abilityList.push(shared.convertName(abilities[i].ability.name, "ability"));
 					if(abilities[i].is_hidden) {
             abilityList[i] = "**" + abilityList[i] + "**";
           }
@@ -655,7 +655,7 @@ var commands = {
 			Promise.resolve(promise)
 			.then(function() {
         if(error) {
-          displayError(message, error);
+          shared.displayError(message, error);
         }
         else {
           // Build details into a message
@@ -672,13 +672,13 @@ var commands = {
 	// Returns the height of a pokemon
 	height: {
 		help: function(message) {
-			initCommand(message, "help", "dex", "height");
+			shared.initCommand(message, "help", "dex", "height", settings.count);
 			message.reply("Returns the height of a pokemon\nUsage: "
 			 + settings.prefix + "dex height <name>\n");
 		},
 
 		run: function(message, name) {
-			if(initCommand(message, name, "dex", "height")) {
+			if(shared.initCommand(message, name, "dex", "height", settings.count)) {
 				return;
 			}
 
@@ -691,7 +691,7 @@ var commands = {
 			}
 
       // Get api names using convert.json
-			details.pokemonname = convertName(details.formname, "form2name");
+			details.pokemonname = shared.convertName(details.formname, "form2name");
 
 			var promise = pkm.getPokemonByName(details.pokemonname)
 			.then(function(r) {
@@ -704,7 +704,7 @@ var commands = {
 			Promise.resolve(promise)
 			.then(function() {
         if(error) {
-          displayError(message, error);
+          shared.displayError(message, error);
         }
         else {
           // Build details into a message
@@ -721,13 +721,13 @@ var commands = {
 	// Returns the weight of a pokemon
 	weight: {
 		help: function(message) {
-			initCommand(message, "help", "dex", "weight");
+			shared.initCommand(message, "help", "dex", "weight", settings.count);
 			message.reply("Returns the weight of a pokemon\nUsage: "
 			 + settings.prefix + "dex weight <name>\n");
 		},
 
 		run: function(message, name) {
-			if(initCommand(message, name, "dex", "weight")) {
+			if(shared.initCommand(message, name, "dex", "weight", settings.count)) {
 				return;
 			}
 
@@ -740,7 +740,7 @@ var commands = {
 			}
 
       // Get api names using convert.json
-			details.pokemonname = convertName(details.formname, "form2name");
+			details.pokemonname = shared.convertName(details.formname, "form2name");
 
 			var promise = pkm.getPokemonByName(details.pokemonname)
 			.then(function(r) {
@@ -753,7 +753,7 @@ var commands = {
 			Promise.resolve(promise)
 			.then(function() {
         if(error) {
-          displayError(message, error);
+          shared.displayError(message, error);
         }
         else {
           // Build details into a message
@@ -766,83 +766,6 @@ var commands = {
       });
 		}
 	}
-}
-
-// Do predefined actions before each command
-function initCommand(message, name, mod, command, sub) {
-	var args = [name, mod, command, sub].filter(function(r){if(r){return r;}}).join(" ");
-
-	console.log("Serving " + settings.prefix + args + " to "
-	+ message.author.username + "#" + message.author.discriminator);
-	// Skips api check if dex # out of range
-	if(parseInt(name) > settings.count) {
-		message.reply("404: " + name + " not found.");
-		return true;
-	}
-}
-
-// Shows a readable error chat
-function displayError(message, error) {
-	if(error.statusCode === 404 && "options" in error && "url" in error.options) {
-		message.reply("404: " + getLastPart(error.options.url) + " not found.");
-	}
-	else if("message" in error) {
-		message.reply(error.message);
-		console.log(error.message);
-	}
-	else {
-		fs.appendFile("uknown_error.txt", JSON.stringify(error, null, 2), function(e) {
-			if(e) {
-				console.log("Error writing unknown_error.txt: " + e);
-			}
-			else {
-				console.log("Successfully wrote to unknown_error.txt");
-				message.reply("Unknown error encountered. Check logs for details.");
-			}
-		});
-	}
-}
-
-// Sorts list of api objects by slot value
-function slotSort(list) {
-	return list.sort(function(a, b) {
-		return a.slot - b.slot;
-	});
-}
-
-// Returns A String Where All Words Are Capitalized
-function firstUpper(string) {
-	upped = string.split("-");
-	for(u in upped) {
-		upped[u] = upped[u][0].toUpperCase() + upped[u].substring(1);
-	}
-	return upped.join(" ");
-}
-
-// Gets last piece of a url
-function getLastPart(url) {
-	return url.split("/").filter(function(r){if(r !== ""){return r;}}).slice(-1)[0];
-}
-
-// Returns string concating o with s if list has 1 item or p is list has >1 items
-function pluralCheck(o, s, p, list) {
-  if(Object.keys(list).filter(function(r){if(r !== "run"){return r;}}).length > 1) {
-    return o + p;
-  }
-  else {
-    return o + s;
-  }
-}
-
-// Send name to convert json using target field
-function convertName(name, target) {
-	if(name in convert[target]) {
-		name = convert[target][name];
-	}
-	else if(["type", "ability", "move"].indexOf(target) !== -1) {
-		name = firstUpper(name);
-	}
-	return name;
 }
 
 module.exports = commands;

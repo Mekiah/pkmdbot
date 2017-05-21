@@ -8,10 +8,10 @@ if(fs.existsSync("./.env")) {
 else {
   closeBot("No \".env\" file found");
 }
-var promise = require("promise");
+var Promise = require("promise");
 var discord = require("discord.js");
+var shared = require("./shared.js");
 var settings = require("./settings.json");
-var convert = require("./convert.json").read2form;
 
 // Import all modules flagged as true in settings.json into modules object
 var modules = { help: {} }
@@ -29,7 +29,7 @@ Object.keys(settings.help).forEach(function(key) {
 var bot = new discord.Client();
 
 bot.on("ready", function() {
-  console.log(pluralCheck("Module", "", "s", modules) + " loaded: " + Object.keys(modules).join(", "));
+  console.log(shared.pluralCheck("Module", "", "s", modules) + " loaded: " + Object.keys(modules).join(", "));
   console.log("Logged in as " + bot.user.username + "#" + bot.user.discriminator);
 });
 
@@ -54,84 +54,70 @@ bot.on("message", function(message) {
     if(args[0] === "about") {
     }
 
-    // Bot help
-    if(args[0] in modules.help) {
-      console.log("Serving " + settings.prefix + "help to "	+ message.author.username + "#" + message.author.discriminator);
-      message.channel.sendMessage("Welcome to Pokemiah\nNote: Commands and subs are optional\n"
-       + "Usage: " + settings.prefix + "<module> <command> <sub> <name>\n"
-       + pluralCheck("Module", "", "s", modules) + "(default is \"" + settings["default-module"] + "\"): " + Object.keys(modules).join(", "));
-    }
-
-    // Module found
-    else if(args[0] in modules) {
-      // Module help
-      if(args[1] in modules.help) {
-        modules[args[0]].help(message);
+    try {
+      // Bot help
+      if(args[0] in modules.help) {
+        console.log("Serving " + settings.prefix + "help to "	+ message.author.username + "#" + message.author.discriminator);
+        message.channel.sendMessage("Welcome to Pokemiah\nNote: Commands and subs are optional\n"
+         + "Usage: " + settings.prefix + "<module> <command> <sub> <name>\n"
+         + shared.pluralCheck("Module", "", "s", modules) + "(default is \"" + settings["default-module"] + "\"): " + Object.keys(modules).join(", "));
       }
 
-      // Command found
-      else if(args[1] in modules[args[0]] && args[1] !== "run") {
-        // Command help
-        if(args[2] in modules.help) {
-          modules[args[0]][args[1]].help(message);
+      // Module found
+      else if(args[0] in modules) {
+        // Module help
+        if(args[1] in modules.help) {
+          modules[args[0]].help(message);
         }
 
-        // Sub found
-        else if("sub" in modules[args[0]][args[1]] && args[2] in modules[args[0]][args[1]].sub) {
-          // Sub help
-          if(args[3] in modules.help) {
+        // Command found
+        else if(args[1] in modules[args[0]] && args[1] !== "run") {
+          // Command help
+          if(args[2] in modules.help) {
             modules[args[0]][args[1]].help(message);
           }
 
-          // Name found and passed into function
+          // Sub found
+          else if("sub" in modules[args[0]][args[1]] && args[2] in modules[args[0]][args[1]].sub) {
+            // Sub help
+            if(args[3] in modules.help) {
+              modules[args[0]][args[1]].help(message);
+            }
+
+            // Name found and passed into function
+            else {
+              modules[args[0]][args[1]].run(message, shared.toApiCase(args.slice(3).join("-")), modules[args[0]][args[1]].sub[args[2]]);
+            }
+          }
+
+          // Sub not found, push rest of input into default sub
           else {
-            modules[args[0]][args[1]].run(message, toApiCase(args.slice(3).join("-")), modules[args[0]][args[1]].sub[args[2]]);
+            modules[args[0]][args[1]].run(message, shared.toApiCase(args.slice(2).join("-")));
           }
         }
 
-        // Sub not found, push rest of input into default sub
+        // Command not found, push rest of input into default command
         else {
-          modules[args[0]][args[1]].run(message, toApiCase(args.slice(2).join("-")));
+          modules[args[0]].run(message, shared.toApiCase(args.slice(1).join("-")));
         }
       }
 
-      // Command not found, push rest of input into default command
+      // Module not found, push rest of input into default module
       else {
-        modules[args[0]].run(message, toApiCase(args.slice(1).join("-")));
+        if(settings["default-module"] in modules) {
+          modules[settings["default-module"]].run(message, shared.toApiCase(args.slice(0).join("-")));
+        }
+
+        else {
+          message.channel.sendMessage("Default module \"" + settings["default-module"] + "\" not found.");
+        }
       }
     }
-
-    // Module not found, push rest of input into default module
-    else {
-      if(settings["default-module"] in modules) {
-        modules[settings["default-module"]].run(message, toApiCase(args.slice(0).join("-")));
-      }
-
-      else {
-        message.channel.sendMessage("Default module \"" + settings["default-module"] + "\" not found.");
-      }
+    catch(error) {
+      shared.logError(message, error);
     }
   }
 });
-
-// Convert read name to one the api will understand
-function toApiCase(string) {
-  var api = string.replace(/é/g,"e").replace(/[^\-0-9A-Za-z?!]/g,"").toLowerCase();
-  if(api in convert) {
-    api = convert[api];
-  }
-  return api;
-}
-
-// Check if list contains multiple
-function pluralCheck(o, s, p, list) {
-  if(Object.keys(list).length > 1) {
-    return o + p;
-  }
-  else {
-    return o + s;
-  }
-}
 
 // Handlers for exit types
 process.on("SIGINT", closeBot.bind(null, "SIGINT", true));
@@ -150,7 +136,7 @@ function closeBot(code, logoff) {
 
 // Login with token
 var login = bot.login(process.env.DISCORD_TOKEN);
-promise.resolve(login)
+Promise.resolve(login)
 .catch(function(e) {
   closeBot("Token is incorrect", false);
 });
