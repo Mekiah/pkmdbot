@@ -1,3 +1,6 @@
+console.log("Starting up...");
+
+// Load dependencies
 var fs = require("fs");
 if(fs.existsSync("./.env")) {
   require("dotenv").config();
@@ -5,7 +8,6 @@ if(fs.existsSync("./.env")) {
 else {
   closeBot("No \".env\" file found")
 }
-
 var Promise = require("promise");
 var discord = require("discord.js");
 var settings = require("./settings.json");
@@ -23,14 +25,13 @@ Object.keys(settings.help).forEach(function(key) {
     modules.help[key] = null;
   }
 });
+
 var bot = new discord.Client();
 
 bot.on("ready", function() {
   console.log(pluralCheck("Module", "", "s", modules) + " loaded: " + Object.keys(modules).join(", "));
   console.log("Logged in as " + bot.user.username + "#" + bot.user.discriminator);
 });
-
-bot.on("disconnect", function() { });
 
 // Command syntax goes as follows[e.g.]: module[dex], command[moves], subcommand[tm], item[nidoking]
 bot.on("message", function(message) {
@@ -106,20 +107,11 @@ bot.on("message", function(message) {
         message.channel.sendMessage("No default module specified");
       }
     }
-    /**/
+    /**********/
   }
 });
 
-var login = bot.login(process.env.DISCORD_TOKEN);
-Promise.resolve(login)
-.catch(function(e) {
-  closeBot("Token is incorrect", false);
-});
-
-// Handlers for exit types
-process.on("SIGINT", closeBot.bind(null, "SIGINT", true));
-process.on("uncaughtException", closeBot.bind(null, "uncaughtException", true));
-
+// Converts read name to one the api will understand
 function toApiCase(string) {
   var api = string.replace(/é/g,"e").replace(/[^\-0-9A-Za-z?!]/g,"").toLowerCase();
   if(api in convert)
@@ -129,6 +121,7 @@ function toApiCase(string) {
   return api;
 }
 
+// Check if list contains many items or one
 function pluralCheck(o, s, p, list) {
   if(Object.keys(list).length > 1) {
     return o + p;
@@ -137,6 +130,10 @@ function pluralCheck(o, s, p, list) {
     return o + s;
   }
 }
+
+// Handlers for exit types
+process.on("SIGINT", closeBot.bind(null, "SIGINT", true));
+process.on("uncaughtException", closeBot.bind(null, "uncaughtException", true));
 
 // Cleanup for closing the bot application
 function closeBot(code, logoff) {
@@ -148,3 +145,10 @@ function closeBot(code, logoff) {
   console.log("Closing process...");
   process.exit();
 }
+
+// Login with token
+var login = bot.login(process.env.DISCORD_TOKEN);
+Promise.resolve(login)
+.catch(function(e) {
+  closeBot("Token is incorrect", false);
+});
