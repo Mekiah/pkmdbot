@@ -776,7 +776,7 @@ function initCommand(message, name, mod, command, sub) {
 	+ message.author.username + "#" + message.author.discriminator);
 	// Skips api check if dex # out of range
 	if(parseInt(name) > settings.count) {
-		message.reply("404 - {\"detail\":\"Not found.\"}".replace("detail", name));
+		message.reply("404: " name " not found.");
 		return true;
 	}
 }
