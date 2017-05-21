@@ -36,14 +36,17 @@ bot.on("ready", function() {
 // Command syntax goes as follows[e.g.]: module[dex], command[moves], subcommand[tm], item[nidoking]
 bot.on("message", function(message) {
   if(message.author !== bot.user && message.content.startsWith(settings.prefix)) {
-        console.log(args);
     var args = message.content.substring(1).split(" ").filter(function(r) {if(r !== "") {return r;}});
-    console.log(args);
 
     // Owner kill switch
-    if(args[0] === "die" && message.author.username + "#" + message.author.discriminator === settings.owner) {
-      console.log("Kill command issued from " + message.author.username + "#" + message.author.discriminator)
-      closeBot("Chat command", true);
+    if(args[0] === "die") {
+      if(message.author.username + "#" + message.author.discriminator === settings.owner) {
+        console.log("Kill command issued from " + message.author.username + "#" + message.author.discriminator)
+        closeBot("Chat command", true);
+      }
+      else {
+        message.channel.sendMessage(message.author.toString() + " is a bully.");
+      }
       return;
     }
 
@@ -54,14 +57,13 @@ bot.on("message", function(message) {
     // Bot help
     if(args[0] in modules.help) {
       console.log("Serving " + settings.prefix + "help to "	+ message.author.username + "#" + message.author.discriminator);
-      message.channel.sendMessage("Welcome to Pokemiah\nNote: Commands and subs are completely optional\n"
+      message.channel.sendMessage("Welcome to Pokemiah\nNote: Commands and subs are optional\n"
        + "Usage: " + settings.prefix + "<module> <command> <sub> <name>\n"
        + pluralCheck("Module", "", "s", modules) + "(default is \"" + settings["default-module"] + "\"): " + Object.keys(modules).join(", "));
     }
 
     // Module found
     else if(args[0] in modules) {
-
       // Module help
       if(args[1] in modules.help) {
         modules[args[0]].help(message);
@@ -69,7 +71,6 @@ bot.on("message", function(message) {
 
       // Command found
       else if(args[1] in modules[args[0]] && args[1] !== "run") {
-
         // Command help
         if(args[2] in modules.help) {
           modules[args[0]][args[1]].help(message);
@@ -77,8 +78,8 @@ bot.on("message", function(message) {
 
         // Sub found
         else if("sub" in modules[args[0]][args[1]] && args[2] in modules[args[0]][args[1]].sub) {
-          // No name specified, call command help
-          if(args.slice(3).length === 0) {
+          // Sub help
+          if(args[3] in modules.help) {
             modules[args[0]][args[1]].help(message);
           }
 
@@ -107,7 +108,7 @@ bot.on("message", function(message) {
       }
 
       else {
-        message.channel.sendMessage("No default module specified");
+        message.channel.sendMessage("Default module \"" + settings["default-module"] + "\" not found.");
       }
     }
   }
@@ -116,8 +117,7 @@ bot.on("message", function(message) {
 // Convert read name to one the api will understand
 function toApiCase(string) {
   var api = string.replace(/é/g,"e").replace(/[^\-0-9A-Za-z?!]/g,"").toLowerCase();
-  if(api in convert)
-  {
+  if(api in convert) {
     api = convert[api];
   }
   return api;
