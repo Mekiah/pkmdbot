@@ -85,7 +85,7 @@ function initCommand(message, name, mod, command, sub) {
 	+ message.author.username + "#" + message.author.discriminator);
 	// Skips api check if an integer
 	if(parseInt(name)) {
-		message.reply("404: " name " not found.");
+		message.reply("404: " + name + " not found.");
 		return true;
 	}
 }
