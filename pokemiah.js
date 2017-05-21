@@ -13,7 +13,7 @@ var discord = require("discord.js");
 var settings = require("./settings.json");
 var convert = require("./convert.json").read2form;
 
-// Imports all modules flagged as true in settings.json into modules object
+// Import all modules flagged as true in settings.json into modules object
 var modules = { help: {} }
 Object.keys(settings.modules).forEach(function(key) {
   if(settings.modules[key]) {
@@ -49,7 +49,6 @@ bot.on("message", function(message) {
     if(args[0] === "about") {
     }
 
-    /* Sends input to the correct module */
     // Bot help
     if(args[0] in modules.help) {
       console.log("Serving " + settings.prefix + "help to "	+ message.author.username + "#" + message.author.discriminator);
@@ -60,6 +59,7 @@ bot.on("message", function(message) {
 
     // Module found
     else if(args[0] in modules) {
+
       // Module help
       if(args[1] in modules.help) {
         modules[args[0]].help(message);
@@ -73,45 +73,45 @@ bot.on("message", function(message) {
           modules[args[0]][args[1]].help(message);
         }
 
-        // Sub found and passed into function
+        // Sub found
         else if("sub" in modules[args[0]][args[1]] && args[2] in modules[args[0]][args[1]].sub) {
           // No name specified, call command help
           if(args.slice(3).length === 0) {
             modules[args[0]][args[1]].help(message);
           }
+
           // Name found and passed into function
           else {
             modules[args[0]][args[1]].run(message, toApiCase(args.slice(3).join("-")), modules[args[0]][args[1]].sub[args[2]]);
           }
         }
 
-        // Sub not found, push rest of input into default sub api call
+        // Sub not found, push rest of input into default sub
         else {
           modules[args[0]][args[1]].run(message, toApiCase(args.slice(2).join("-")));
         }
       }
 
-      // Command not found, push rest of input into default command api call
+      // Command not found, push rest of input into default command
       else {
         modules[args[0]].run(message, toApiCase(args.slice(1).join("-")));
       }
-
     }
 
-    // Module not found, push rest of input into default module api call
+    // Module not found, push rest of input into default module
     else {
       if(settings["default-module"] in modules) {
         modules[settings["default-module"]].run(message, toApiCase(args.slice(0).join("-")));
       }
+
       else {
         message.channel.sendMessage("No default module specified");
       }
     }
-    /**********/
   }
 });
 
-// Converts read name to one the api will understand
+// Convert read name to one the api will understand
 function toApiCase(string) {
   var api = string.replace(/é/g,"e").replace(/[^\-0-9A-Za-z?!]/g,"").toLowerCase();
   if(api in convert)
@@ -121,7 +121,7 @@ function toApiCase(string) {
   return api;
 }
 
-// Check if list contains many items or one
+// Check if list contains multiple
 function pluralCheck(o, s, p, list) {
   if(Object.keys(list).length > 1) {
     return o + p;
