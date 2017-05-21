@@ -9,7 +9,7 @@ var commands = {
 	// Returns what !move does, usage, and list of commands e.g. type, moves, effectiveness
 	help: function(message) {
 		shared.initCommand(message, "help", "move", 0);
-		message.reply("Returns information on a move\nNote: Not all commands use subs\nUsage: "
+		message.channel.send("Returns information on a move\nNote: Not all commands use subs\nUsage: "
 		 + settings.prefix + "move <command> <sub> <name>\n"
 		 + shared.pluralCheck("Command", "", "s", commands) + " (default is \"info\"): "
 		 + Object.keys(commands).filter(function(r){if(r !== "run"){return r;}}).join(", "));
@@ -24,7 +24,7 @@ var commands = {
 	info: {
 		help: function(message) {
 			shared.initCommand(message, "help", "move", "info", 0);
-			message.reply("Returns the basic details of a move\nUsage: "
+			message.channel.send("Returns the basic details of a move\nUsage: "
 			 + settings.prefix + "move info <name>\n");
 		},
 
@@ -97,7 +97,7 @@ var commands = {
 					}
 					reply = reply + "\n" + stats.join(" - ");
 
-          message.channel.sendMessage(reply);
+          message.channel.send(reply);
         }
       })
 			.catch(function(e) {

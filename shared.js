@@ -10,7 +10,7 @@ module.exports = {
     + message.author.username + "#" + message.author.discriminator);
     // Skips api check passed number is out of limit
     if(parseInt(name) > limit) {
-      message.reply("404: " + name + " not found.");
+      message.channel.send("404: " + name + " not found.");
       return true;
     }
   },
@@ -55,10 +55,10 @@ module.exports = {
 
   displayError: function(message, error) {
     if(error.statusCode === 404 && "options" in error && "url" in error.options) {
-  		message.reply("404: " + module.exports.getLastPart(error.options.url) + " not found.");
+  		message.channel.send("404: " + module.exports.getLastPart(error.options.url) + " not found.");
   	}
   	else if("message" in error) {
-  		message.reply(error.message);
+  		message.channel.send(error.message);
   		console.log(error.message);
   	}
   	else {
@@ -68,7 +68,7 @@ module.exports = {
   			}
   			else {
   				console.log("Successfully wrote to unknown_error.txt");
-  				message.reply("Unknown error encountered. Check logs for details.");
+  				message.channel.send("Unknown error encountered. Check logs for details.");
   			}
   		});
   	}
@@ -77,11 +77,11 @@ module.exports = {
     fs.appendFile("uknown_error.txt", error.stack + "\n", function(e) {
       if(e) {
         console.log("Error writing unknown_error.txt: " + e);
-        message.reply("Unknown error encountered. Check console for details.");
+        message.channel.send("Unknown error encountered. Check console for details.");
       }
       else {
         console.log("Successfully wrote to unknown_error.txt");
-        message.reply("Unknown error encountered. Check logs for details.");
+        message.channel.send("Unknown error encountered. Check logs for details.");
       }
     });
   },

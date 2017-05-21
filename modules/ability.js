@@ -9,7 +9,7 @@ var commands = {
 	// Returns what !ability does, usage, and list of commands
 	help: function(message) {
 		shared.initCommand(message, "help", "ability", 0);
-		message.reply("Returns information on an ability\nNote: Not all commands use subs\nUsage: "
+		message.channel.send("Returns information on an ability\nNote: Not all commands use subs\nUsage: "
 		 + settings.prefix + "move <command> <sub> <name>\n"
 		 + shared.pluralCheck("Command", "", "s", commands) + " (default is \"info\"): "
 		 + Object.keys(commands).filter(function(r){if(r !== "run"){return r;}}).join(", "));
@@ -24,7 +24,7 @@ var commands = {
 	info: {
 		help: function(message) {
 			shared.initCommand(message, "help", "ability", "info", 0);
-			message.reply("Returns the basic details of an ability\nUsage: "
+			message.channel.send("Returns the basic details of an ability\nUsage: "
 			 + settings.prefix + "ability info <name>\n");
 		},
 
@@ -67,7 +67,7 @@ var commands = {
           // Build details into a message
           reply = details.name + " - " + details.effect;
 
-          message.channel.sendMessage(reply);
+          message.channel.send(reply);
         }
       })
 			.catch(function(e) {

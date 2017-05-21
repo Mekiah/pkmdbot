@@ -10,7 +10,7 @@ var commands = {
 	// Returns what !dex does, usage, and list of commands e.g. type, moves, effectiveness
 	help: function(message) {
 		shared.initCommand(message, "help", "dex", settings.count);
-		message.reply("Returns information on a pokemon\nNote: Not all commands use subs\nUsage: "
+		message.channel.send("Returns information on a pokemon\nNote: Not all commands use subs\nUsage: "
 		 + settings.prefix + "dex <command> <sub> <name>\n"
 		 + shared.pluralCheck("Command", "", "s", commands) + " (default is \"info\"): "
 		 + Object.keys(commands).filter(function(r){if(r !== "run"){return r;}}).join(", "));
@@ -25,7 +25,7 @@ var commands = {
 	info: {
 		help: function(message) {
 			shared.initCommand(message, "help", "dex", "info", settings.count);
-			message.reply("Returns the basic details of a pokemon\nUsage: "
+			message.channel.send("Returns the basic details of a pokemon\nUsage: "
 			 + settings.prefix + "dex info <name>\n");
 		},
 
@@ -157,10 +157,10 @@ var commands = {
 
           // Send file with a comment if sprite exists, else send text only
           if(details.sprite) {
-            message.channel.sendFile(details.sprite, null, reply);
+            message.channel.send(reply, {file: details.sprite});
           }
           else {
-            message.channel.sendMessage(reply);
+            message.channel.send(reply);
           }
         }
       })
@@ -174,7 +174,7 @@ var commands = {
 	stats: {
 		help: function(message) {
 			shared.initCommand(message, "help", "dex", "stats", settings.count);
-			message.reply("Returns the base stats of a pokemon\nUsage: "
+			message.channel.send("Returns the base stats of a pokemon\nUsage: "
 			 + settings.prefix + "dex stats <sub> <name>\n"
 			 + shared.pluralCheck("Sub", "", "s", commands.stats.sub) + " (default is \"all\"): " + Object.keys(commands.stats.sub).join(", "));
 		},
@@ -242,7 +242,7 @@ var commands = {
 						reply = details[command];
 					}
 
-          message.reply(reply);
+          message.channel.send(reply);
         }
       })
 			.catch(function(e) {
@@ -255,7 +255,7 @@ var commands = {
 	evs: {
 		help: function(message) {
 			shared.initCommand(message, "help", "dex", "evs", settings.count);
-			message.reply("Returns the ev yield of a pokemon\nUsage: "
+			message.channel.send("Returns the ev yield of a pokemon\nUsage: "
 			 + settings.prefix + "dex evs <sub> <name>\n"
 			 + shared.pluralCheck("Sub", "", "s", commands.evs.sub) + " (default is \"all\"): " + Object.keys(commands.evs.sub).join(", "));
 		},
@@ -323,7 +323,7 @@ var commands = {
 						reply = details[command];
 					}
 
-					message.reply(reply);
+					message.channel.send(reply);
 				}
 			})
 			.catch(function(e) {
@@ -336,7 +336,7 @@ var commands = {
 	moves: {
 		help: function(message) {
 			shared.initCommand(message, "help", "dex", "moves", settings.count);
-			message.reply("Returns the moves of a pokemon\nUsage: "
+			message.channel.send("Returns the moves of a pokemon\nUsage: "
 			 + settings.prefix + "dex moves <sub> <name>\n"
 			 + shared.pluralCheck("Sub", "", "s", commands.moves.sub) + " (default is \"learn\"): " + Object.keys(commands.moves.sub).join(", "));
 		},
@@ -402,10 +402,10 @@ var commands = {
 					}
 
 					if(replyList.length === 0) {
-						message.reply("No moves.");
+						message.channel.send("No moves.");
 					}
 					else {
-						message.reply(replyList.join(", "));
+						message.channel.send(replyList.join(", "));
 					}
         }
       })
@@ -419,7 +419,7 @@ var commands = {
 	type: {
 		help: function(message) {
 			shared.initCommand(message, "help", "dex", "type", settings.count);
-			message.reply("Returns the type of a pokemon\nUsage: "
+			message.channel.send("Returns the type of a pokemon\nUsage: "
 			 + settings.prefix + "dex type <name>\n");
 		},
 
@@ -462,7 +462,7 @@ var commands = {
         else {
           // Build details into a message
           reply = typeList.join(" | ");
-          message.reply(reply);
+          message.channel.send(reply);
         }
       })
 			.catch(function(e) {
@@ -475,7 +475,7 @@ var commands = {
 	effect: {
 		help: function(message) {
 			shared.initCommand(message, "help", "dex", "effects", settings.count);
-			message.reply("Returns the type effectiveness of a pokemon\nUsage: "
+			message.channel.send("Returns the type effectiveness of a pokemon\nUsage: "
 			 + settings.prefix + "dex effect <sub> <name>\n"
 			 + shared.pluralCheck("Sub", "", "s", commands.effect.sub) + " (default is \"all\"): " + Object.keys(commands.effect.sub).join(", "));
 		},
@@ -596,7 +596,7 @@ var commands = {
 							}
 							reply = replyList[1] + replyList[2] + replyList[4] + replyList[0.5] + replyList[0.25] + replyList[0];
 
-							message.reply(reply);
+							message.channel.send(reply);
 						}
 					})
 					.catch(function(e) {
@@ -614,7 +614,7 @@ var commands = {
 	ability: {
 		help: function(message) {
 			shared.initCommand(message, "help", "dex", "ability", settings.count);
-			message.reply("Returns the ability of a pokemon\nUsage: "
+			message.channel.send("Returns the ability of a pokemon\nUsage: "
 			 + settings.prefix + "dex ability <name>\n");
 		},
 
@@ -660,7 +660,7 @@ var commands = {
         else {
           // Build details into a message
           reply = abilityList.join(" | ");
-          message.reply(reply);
+          message.channel.send(reply);
         }
       })
 			.catch(function(e) {
@@ -673,7 +673,7 @@ var commands = {
 	height: {
 		help: function(message) {
 			shared.initCommand(message, "help", "dex", "height", settings.count);
-			message.reply("Returns the height of a pokemon\nUsage: "
+			message.channel.send("Returns the height of a pokemon\nUsage: "
 			 + settings.prefix + "dex height <name>\n");
 		},
 
@@ -709,7 +709,7 @@ var commands = {
         else {
           // Build details into a message
           reply = details.height;
-          message.reply(reply);
+          message.channel.send(reply);
         }
       })
 			.catch(function(e) {
@@ -722,7 +722,7 @@ var commands = {
 	weight: {
 		help: function(message) {
 			shared.initCommand(message, "help", "dex", "weight", settings.count);
-			message.reply("Returns the weight of a pokemon\nUsage: "
+			message.channel.send("Returns the weight of a pokemon\nUsage: "
 			 + settings.prefix + "dex weight <name>\n");
 		},
 
@@ -758,7 +758,7 @@ var commands = {
         else {
           // Build details into a message
           reply = details.weight;
-          message.reply(reply);
+          message.channel.send(reply);
         }
       })
 			.catch(function(e) {

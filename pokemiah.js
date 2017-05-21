@@ -45,20 +45,55 @@ bot.on("message", function(message) {
         closeBot("Chat command", true);
       }
       else {
-        message.channel.sendMessage(message.author.toString() + " is a bully.");
+        message.channel.send(message.author.toString() + " is a bully.");
       }
       return;
     }
 
     // About the project
     if(args[0] === "about") {
+
+      Promise.resolve(bot.fetchUser(116060463095218180))
+      .then(function(r) {
+        message.channel.send('', {embed: {
+            color: 3447003,
+            author: {
+              name: r.username,
+              icon_url: r.avatarURL
+            },
+            title: 'This is an embed',
+            url: 'http://google.com',
+            description: 'This is a test embed to showcase what they look like and what they can do.',
+            fields: [{
+                name: 'Fields',
+                value: 'They can have different fields with small headlines.'
+              },
+              {
+                name: 'Masked links',
+                value: 'You can put [masked links](http://google.com) inside of rich embeds.'
+              },
+              {
+                name: 'Markdown',
+                value: 'You can put all the *usual* **__Markdown__** inside of them.'
+              }
+            ],
+            timestamp: new Date(),
+            footer: {
+              icon_url: r.avatarURL,
+              text: '© Example'
+            }
+          }
+        });
+      });
+
+      return;
     }
 
     try {
       // Bot help
       if(args[0] in modules.help) {
         console.log("Serving " + settings.prefix + "help to "	+ message.author.username + "#" + message.author.discriminator);
-        message.channel.sendMessage("Welcome to Pokemiah\nNote: Commands and subs are optional\n"
+        message.channel.send("Welcome to Pokemiah\nNote: Commands and subs are optional\n"
          + "Usage: " + settings.prefix + "<module> <command> <sub> <name>\n"
          + shared.pluralCheck("Module", "", "s", modules) + "(default is \"" + settings["default-module"] + "\"): " + Object.keys(modules).join(", "));
       }
@@ -109,7 +144,7 @@ bot.on("message", function(message) {
         }
 
         else {
-          message.channel.sendMessage("Default module \"" + settings["default-module"] + "\" not found.");
+          message.channel.send("Default module \"" + settings["default-module"] + "\" not found.");
         }
       }
     }
