@@ -1,6 +1,6 @@
 {
   "name": "pokemiah",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A Node.js Discord bot for retrieving pokemon information",
   "main": "pokemiah.js",
   "scripts": {
@@ -17,7 +17,7 @@
     "pokemon"
   ],
   "author": "Mekiah",
-  "license": "UNLICENSED",
+  "license": "AGPL-3.0",
   "bugs": {
     "url": "https://github.com/Mekiah/pokemiah/issues"
   },
@@ -25,7 +25,7 @@
   "dependencies": {
     "discord.js": "^10.0.1",
     "dotenv": "^2.0.0",
-    "pokedex-promise-v2": "^3.0.1",
+    "pokedex-promise-v2": "^3.0.3",
     "promise": "^7.1.1"
   }
 }

@@ -2,7 +2,11 @@ var fs = require("fs");
 if(fs.existsSync("./.env")) {
   require("dotenv").config();
 }
+else {
+  closeBot("No \".env\" file found")
+}
 
+var Promise = require("promise");
 var discord = require("discord.js");
 var settings = require("./settings.json");
 var convert = require("./convert.json").read2form;
@@ -31,22 +35,22 @@ bot.on("disconnect", function() { });
 // Command syntax goes as follows[e.g.]: module[dex], command[moves], subcommand[tm], item[nidoking]
 bot.on("message", function(message) {
   if(message.author !== bot.user && message.content.startsWith(settings.prefix)) {
-    var params = message.content.substring(1).split(" ");
+    var args = message.content.substring(1).split(" ");
 
     // Owner kill switch
-    if(params[0] === "die" && message.author.username + "#" + message.author.discriminator === settings.owner) {
+    if(args[0] === "die" && message.author.username + "#" + message.author.discriminator === settings.owner) {
       console.log("Kill command issued from " + message.author.username + "#" + message.author.discriminator)
-      closeBot("chat");
+      closeBot("Chat command", true);
       return;
     }
 
     // About the project
-    if(params[0] === "about") {
+    if(args[0] === "about") {
     }
 
     /* Sends input to the correct module */
     // Bot help
-    if(params[0] in modules.help) {
+    if(args[0] in modules.help) {
       console.log("Serving " + settings.prefix + "help to "	+ message.author.username + "#" + message.author.discriminator);
       message.channel.sendMessage("Welcome to Pokemiah\nNote: Commands and subs are completely optional\n"
        + "Usage: " + settings.prefix + "<module> <command> <sub> <name>\n"
@@ -54,41 +58,41 @@ bot.on("message", function(message) {
     }
 
     // Module found
-    else if(params[0] in modules) {
+    else if(args[0] in modules) {
       // Module help
-      if(params[1] in modules.help) {
-        modules[params[0]].help(message);
+      if(args[1] in modules.help) {
+        modules[args[0]].help(message);
       }
 
       // Command found
-      else if(params[1] in modules[params[0]] && params[1] !== "run") {
+      else if(args[1] in modules[args[0]] && args[1] !== "run") {
 
         // Command help
-        if(params[2] in modules.help) {
-          modules[params[0]][params[1]].help(message);
+        if(args[2] in modules.help) {
+          modules[args[0]][args[1]].help(message);
         }
 
         // Sub found and passed into function
-        else if("sub" in modules[params[0]][params[1]] && params[2] in modules[params[0]][params[1]].sub) {
+        else if("sub" in modules[args[0]][args[1]] && args[2] in modules[args[0]][args[1]].sub) {
           // No name specified, call command help
-          if(params.slice(3).length === 0) {
-            modules[params[0]][params[1]].help(message);
+          if(args.slice(3).length === 0) {
+            modules[args[0]][args[1]].help(message);
           }
           // Name found and passed into function
           else {
-            modules[params[0]][params[1]].run(message, toApiCase(params.slice(3).join("-")), modules[params[0]][params[1]].sub[params[2]]);
+            modules[args[0]][args[1]].run(message, toApiCase(args.slice(3).join("-")), modules[args[0]][args[1]].sub[args[2]]);
           }
         }
 
         // Sub not found, push rest of input into default sub api call
         else {
-          modules[params[0]][params[1]].run(message, toApiCase(params.slice(2).join("-")));
+          modules[args[0]][args[1]].run(message, toApiCase(args.slice(2).join("-")));
         }
       }
 
       // Command not found, push rest of input into default command api call
       else {
-        modules[params[0]].run(message, toApiCase(params.slice(1).join("-")));
+        modules[args[0]].run(message, toApiCase(args.slice(1).join("-")));
       }
 
     }
@@ -96,7 +100,7 @@ bot.on("message", function(message) {
     // Module not found, push rest of input into default module api call
     else {
       if(settings["default-module"] in modules) {
-        modules[settings["default-module"]].run(message, toApiCase(params.slice(0).join("-")));
+        modules[settings["default-module"]].run(message, toApiCase(args.slice(0).join("-")));
       }
       else {
         message.channel.sendMessage("No default module specified");
@@ -106,11 +110,15 @@ bot.on("message", function(message) {
   }
 });
 
-bot.login(process.env.DISCORD_TOKEN);
+var login = bot.login(process.env.DISCORD_TOKEN);
+Promise.resolve(login)
+.catch(function(e) {
+  closeBot("Token is incorrect", false);
+});
 
-// Handers for exit types
-process.on("SIGINT", closeBot.bind(null, "SIGINT"));
-process.on("uncaughtException", closeBot.bind(null, "uncaughtException"));
+// Handlers for exit types
+process.on("SIGINT", closeBot.bind(null, "SIGINT", true));
+process.on("uncaughtException", closeBot.bind(null, "uncaughtException", true));
 
 function toApiCase(string) {
   var api = string.replace(/é/g,"e").replace(/[^\-0-9A-Za-z?!]/g,"").toLowerCase();
@@ -131,9 +139,12 @@ function pluralCheck(o, s, p, list) {
 }
 
 // Cleanup for closing the bot application
-function closeBot(code) {
-  console.log("Exit issued from: " + code);
-  console.log("Logging off...");
-  bot.destroy();
+function closeBot(code, logoff) {
+  console.log("Exit: " + code);
+  if(logoff) {
+    console.log("Logging off...");
+    bot.destroy();
+  }
+  console.log("Closing process...");
   process.exit();
 }

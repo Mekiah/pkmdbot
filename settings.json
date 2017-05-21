@@ -3,7 +3,7 @@
   "owner": "Mekiah#1942",
   "version": "omega-ruby",
   "version-group": "omega-ruby-alpha-sapphire",
-  "count": 721,
+  "count": 802,
   "modules": {
     "dex": true,
     "move": true,
