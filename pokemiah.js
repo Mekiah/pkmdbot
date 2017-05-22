@@ -52,19 +52,14 @@ bot.on("message", function(message) {
 
     // About the project
     if(args[0] === "about") {
-      Promise.resolve(bot.fetchUser(11606463095218180))
+      Promise.resolve(bot.fetchUser(116060463095218180))
       .then(function(r) {
-        message.channel.send({
-          embed: {
-            color: 16740352,
-            author: {
-              name: r.username + "#" + r.discriminator,
-              icon_url: r.avatarURL
-            },
-            description: "Pokemiah is an open source Discord bot for retrieving Pokemon information. " +
-            "You can follow the development, learn to host your own, or even contribute [here](https://github.com/Mekiah/pokemiah).",
-          }
-        });
+        const embed = new discord.RichEmbed()
+        .setAuthor(r.username + "#" + r.discriminator, r.avatarURL)
+        .setColor("FF7000")
+        .setDescription("Pokemiah is an open source Discord bot for retrieving Pokemon information. " +
+        "You can follow the development, learn to host your own, or even contribute [here](https://github.com/Mekiah/pokemiah).");
+         message.channel.send({embed});
       })
       .catch(function(e) {
         shared.logError(message, e);
