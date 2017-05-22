@@ -52,40 +52,20 @@ bot.on("message", function(message) {
 
     // About the project
     if(args[0] === "about") {
-
       Promise.resolve(bot.fetchUser(116060463095218180))
       .then(function(r) {
-        message.channel.send('', {embed: {
-            color: 3447003,
+        message.channel.send({
+          embed: {
+            color: 16740352,
             author: {
-              name: r.username,
+              name: r.username + "#" + r.discriminator,
               icon_url: r.avatarURL
             },
-            title: 'This is an embed',
-            url: 'http://google.com',
-            description: 'This is a test embed to showcase what they look like and what they can do.',
-            fields: [{
-                name: 'Fields',
-                value: 'They can have different fields with small headlines.'
-              },
-              {
-                name: 'Masked links',
-                value: 'You can put [masked links](http://google.com) inside of rich embeds.'
-              },
-              {
-                name: 'Markdown',
-                value: 'You can put all the *usual* **__Markdown__** inside of them.'
-              }
-            ],
-            timestamp: new Date(),
-            footer: {
-              icon_url: r.avatarURL,
-              text: '© Example'
-            }
+            description: "Pokemiah is an open source Discord bot for retrieving Pokemon information. " +
+            "You can follow the development, learn to host your own, or even contribute [here](https://github.com/Mekiah/pokemiah).",
           }
         });
       });
-
       return;
     }
 
