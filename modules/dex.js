@@ -140,28 +140,32 @@ var commands = {
 					shared.displayError(message, error);
         }
         else {
-          // Overwrite sprite url with local sprite path if exists
-          if(fs.existsSync("./sprites/" + details.formname + ".gif")) {
-            details.sprite = "./sprites/" + details.formname + ".gif";
-          }
-          else if(fs.existsSync("./sprites/" + details.formname + ".png")) {
-            details.sprite = "./sprites/" + details.formname + ".png";
-          }
-
+					// Construct message
 					var embed = new Discord.RichEmbed()
 					.setTitle(details.name + " #" + details.number)
 					.setColor(shared.convertName(typeList[0].toLowerCase(), "color"))
 					.setURL("http://bulbapedia.bulbagarden.net/wiki/" + details.name)
-					.setThumbnail(details.sprite)
 					.addField(shared.pluralCheck("Type", "", "s", typeList), typeList.join(" | "), true)
 					.addField(shared.pluralCheck("Abilit", "y", "ies", abilityList), abilityList.join(", "), true)
 					.addField("Height", details.height, true)
 					.addField("Weight", details.weight, true);
-	         message.channel.send({embed});
 
 					 if(details.title !== "") {
 						 embed.setDescription(details.title);
 					 }
+
+					 // Overwrite sprite url with local sprite path if exists
+           if(fs.existsSync("./sprites/" + details.formname + ".gif")) {
+						 embed.attachFile("./sprites/" + details.formname + ".gif");
+             details.sprite = "attachment://" + details.formname + ".gif";
+           }
+           else if(fs.existsSync("./sprites/" + details.formname + ".png")) {
+						 embed.attachFile("./sprites/" + details.formname + ".png");
+             details.sprite = "attachment://" + details.formname + ".png";
+           }
+					 embed.setThumbnail(details.sprite);
+
+ 	         message.channel.send({embed});
 
 					/*** old message
           // Build details into a message
