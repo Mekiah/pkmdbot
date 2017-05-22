@@ -76,6 +76,9 @@ module.exports = {
   	}
   },
   logError: function(message, error) {
+    if("stack" in error) {
+      error = error.stack;
+    }
     fs.appendFile("error.log", error + "\n", function(e) {
       if(e) {
         console.log("Error writing to error.log: " + e);

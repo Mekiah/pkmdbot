@@ -1,5 +1,6 @@
 var fs = require("fs");
 var Promise = require("promise");
+var Discord = require("discord.js");
 var Pokedex = require("pokedex-promise-v2");
 var shared = require("../shared.js");
 var settings = require("../settings.json");
@@ -147,6 +148,22 @@ var commands = {
             details.sprite = "./sprites/" + details.formname + ".png";
           }
 
+					var embed = new Discord.RichEmbed()
+					.setTitle(details.name + " #" + details.number)
+					.setColor(shared.convertName(typeList[0].toLowerCase(), "color"))
+					.setURL("http://bulbapedia.bulbagarden.net/wiki/" + details.name)
+					.setThumbnail(details.sprite)
+					.addField(shared.pluralCheck("Type", "", "s", typeList), typeList.join(" | "), true)
+					.addField(shared.pluralCheck("Abilit", "y", "ies", abilityList), abilityList.join(", "), true)
+					.addField("Height", details.height, true)
+					.addField("Weight", details.weight, true);
+	         message.channel.send({embed});
+
+					 if(details.title !== "") {
+						 embed.setDescription(details.title);
+					 }
+
+					/*** old message
           // Build details into a message
           reply = details.name + " #" + details.number + details.title
           + "\n" + shared.pluralCheck("Type", "", "s", typeList) + ": " + typeList.join(" | ")
@@ -162,6 +179,7 @@ var commands = {
           else {
             message.channel.send(reply);
           }
+					***/
         }
       })
 			.catch(function(e) {

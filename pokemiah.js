@@ -9,7 +9,7 @@ else {
   closeBot("No \".env\" file found");
 }
 var Promise = require("promise");
-var discord = require("discord.js");
+var Discord = require("discord.js");
 var shared = require("./shared.js");
 var settings = require("./settings.json");
 
@@ -26,7 +26,7 @@ Object.keys(settings.help).forEach(function(key) {
   }
 });
 
-var bot = new discord.Client();
+var bot = new Discord.Client();
 
 bot.on("ready", function() {
   console.log(shared.pluralCheck("Module", "", "s", modules) + " loaded: " + Object.keys(modules).join(", "));
@@ -54,7 +54,7 @@ bot.on("message", function(message) {
     if(args[0] === "about") {
       Promise.resolve(bot.fetchUser(116060463095218180))
       .then(function(r) {
-        const embed = new discord.RichEmbed()
+        const embed = new Discord.RichEmbed()
         .setAuthor(r.username + "#" + r.discriminator, r.avatarURL)
         .setColor("FF7000")
         .setDescription("Pokemiah is an open source Discord bot for retrieving Pokemon information. " +
