@@ -16,7 +16,7 @@ module.exports = {
   },
 
   toApiCase: function(string) {
-    var api = string.replace(/é/g,"e").replace(/[^\-0-9A-Za-z?!]/g,"").replace(/^\?/,"").toLowerCase();
+    var api = string.replace(/é/g,"e").replace(/[^\-0-9A-Za-z?!]/g,"").toLowerCase();
     while(api[0] === "?") {
       api = api.replace(/^\?/,"");
     }
