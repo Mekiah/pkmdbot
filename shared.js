@@ -16,9 +16,15 @@ module.exports = {
   },
 
   toApiCase: function(string) {
-    var api = string.replace(/é/g,"e").replace(/[^\-0-9A-Za-z?!]/g,"").toLowerCase();
+    var api = string.replace(/é/g,"e").replace(/[^\-0-9A-Za-z?!]/g,"").replace(/^\?/,"").toLowerCase();
+    while(api[0] === "?") {
+      api = api.replace(/^\?/,"");
+    }
     if(api in convert.read2form) {
       api = convert.read2form[api];
+    }
+    if(api === "") {
+      api = "-";
     }
     return api;
   },

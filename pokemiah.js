@@ -115,7 +115,7 @@ bot.on("message", function(message) {
       // Module not found, push rest of input into default module
       else {
         if(settings["default-module"] in modules) {
-          modules[settings["default-module"]].run(message, shared.toApiCase(args.slice(0).join("-")));
+          modules[settings["default-module"]].run(message, shared.toApiCase(args.join("-")));
         }
 
         else {
