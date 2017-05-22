@@ -57,31 +57,33 @@ module.exports = {
     if(error.statusCode === 404 && "options" in error && "url" in error.options) {
   		message.channel.send("404: " + module.exports.getLastPart(error.options.url) + " not found.");
   	}
-  	else if("message" in error) {
-  		message.channel.send(error.message);
-  		console.log(error.message);
-  	}
   	else {
-  		fs.appendFile("uknown_error.txt", JSON.stringify(error, null, 2), function(e) {
+      if("message" in error) {
+    		message.channel.send(error.message);
+    		console.log(error.message);
+    	}
+      else {
+        message.channel.send("Error encountered. Check logs for details.");
+      }
+  		fs.appendFile("error.log", JSON.stringify(error, null, 2), function(e) {
   			if(e) {
-  				console.log("Error writing unknown_error.txt: " + e);
+  				console.log("Error writing to error log: " + e);
   			}
   			else {
-  				console.log("Successfully wrote to unknown_error.txt");
-  				message.channel.send("Unknown error encountered. Check logs for details.");
+  				console.log("Successfully wrote to error.log");
   			}
   		});
   	}
   },
   logError: function(message, error) {
-    fs.appendFile("uknown_error.txt", error.stack + "\n", function(e) {
+    fs.appendFile("error.log", error + "\n", function(e) {
       if(e) {
-        console.log("Error writing unknown_error.txt: " + e);
-        message.channel.send("Unknown error encountered. Check console for details.");
+        console.log("Error writing to error.log: " + e);
+        message.channel.send("Error encountered. Check console for details.");
       }
       else {
-        console.log("Successfully wrote to unknown_error.txt");
-        message.channel.send("Unknown error encountered. Check logs for details.");
+        console.log("Successfully wrote to error.log");
+        message.channel.send("Error encountered. Check logs for details.");
       }
     });
   },

@@ -101,7 +101,7 @@ var commands = {
         }
       })
 			.catch(function(e) {
-        console.log("Error in info Promise.resolve: " + e);
+        shared.logError(message, e);
       });
 		}
 	},

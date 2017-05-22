@@ -165,7 +165,7 @@ var commands = {
         }
       })
 			.catch(function(e) {
-        console.log("Error in info Promise.all: " + e);
+        shared.logError(message, e);
       });
 		}
 	},
@@ -246,7 +246,7 @@ var commands = {
         }
       })
 			.catch(function(e) {
-        console.log("Error in info Promise.resolve: " + e);
+        shared.logError(message, e);
       });
 		}
 	},
@@ -327,7 +327,7 @@ var commands = {
 				}
 			})
 			.catch(function(e) {
-				console.log("Error in info Promise.resolve: " + e);
+				shared.logError(message, e);
 			});
 		}
 	},
@@ -410,7 +410,7 @@ var commands = {
         }
       })
 			.catch(function(e) {
-        console.log("Error in info Promise.resolve: " + e);
+        shared.logError(message, e);
       });
 		}
 	},
@@ -466,7 +466,7 @@ var commands = {
         }
       })
 			.catch(function(e) {
-        console.log("Error in info Promise.resolve: " + e);
+        shared.logError(message, e);
       });
 		}
 	},
@@ -600,12 +600,12 @@ var commands = {
 						}
 					})
 					.catch(function(e) {
-						console.log("Error in info Promise.all: " + e);
+						shared.logError(message, e);
 					});
         }
       })
 			.catch(function(e) {
-        console.log("Error in info Promise.resolve: " + e);
+        shared.logError(message, e);
       });
 		}
 	},
@@ -664,7 +664,7 @@ var commands = {
         }
       })
 			.catch(function(e) {
-        console.log("Error in info Promise.resolve: " + e);
+        shared.logError(message, e);
       });
 		}
 	},
@@ -713,7 +713,7 @@ var commands = {
         }
       })
 			.catch(function(e) {
-        console.log("Error in info Promise.resolve: " + e);
+        shared.logError(message, e);
       });
 		}
 	},
@@ -762,7 +762,7 @@ var commands = {
         }
       })
 			.catch(function(e) {
-        console.log("Error in info Promise.resolve: " + e);
+        shared.logError(message, e);
       });
 		}
 	}

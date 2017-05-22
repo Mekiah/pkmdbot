@@ -52,7 +52,7 @@ bot.on("message", function(message) {
 
     // About the project
     if(args[0] === "about") {
-      Promise.resolve(bot.fetchUser(116060463095218180))
+      Promise.resolve(bot.fetchUser(11606463095218180))
       .then(function(r) {
         message.channel.send({
           embed: {
@@ -65,6 +65,9 @@ bot.on("message", function(message) {
             "You can follow the development, learn to host your own, or even contribute [here](https://github.com/Mekiah/pokemiah).",
           }
         });
+      })
+      .catch(function(e) {
+        shared.logError(message, e);
       });
       return;
     }
@@ -128,8 +131,8 @@ bot.on("message", function(message) {
         }
       }
     }
-    catch(error) {
-      shared.logError(message, error);
+    catch(e) {
+      shared.logError(message, e);
     }
   }
 });
