@@ -5,9 +5,6 @@ var fs = require("fs");
 if(fs.existsSync("./.env")) {
   require("dotenv").config();
 }
-else {
-  closeBot("No \".env\" file found");
-}
 var Promise = require("promise");
 var Discord = require("discord.js");
 var shared = require("./shared.js");
@@ -148,6 +145,9 @@ function closeBot(code, logoff) {
 }
 
 // Login with token
+if(!process.env.DISCORD_TOKEN) {
+  closeBot("No \".env\" file found");
+}
 var login = bot.login(process.env.DISCORD_TOKEN);
 Promise.resolve(login)
 .catch(function(e) {
